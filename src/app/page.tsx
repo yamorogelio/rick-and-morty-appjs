@@ -1,8 +1,11 @@
 "use client";
 
-import { gql, useQuery } from "@apollo/client";
+import React from "react";
+import { gql } from "@apollo/client"; 
+import { useQuery } from "@apollo/client/react"; 
 import Link from "next/link";
 
+// GraphQL query to get characters
 const GET_CHARACTERS = gql`
   query GetCharacters {
     characters {
@@ -30,8 +33,13 @@ export default function HomePage() {
   return (
     <main style={{ padding: "20px" }}>
       <h1>Rick and Morty Characters</h1>
-
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, 200px)", gap: "20px" }}>
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(auto-fill, 200px)",
+          gap: "20px",
+        }}
+      >
         {data.characters.results.map((char: Character) => (
           <Link key={char.id} href={`/characters/${char.id}`}>
             <div style={{ cursor: "pointer" }}>

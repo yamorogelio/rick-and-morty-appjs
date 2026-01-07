@@ -4,7 +4,7 @@ import { gql, useQuery } from "@apollo/client";
 import Link from "next/link";
 
 const GET_EPISODES = gql`
-  query {
+  query GetEpisodes {
     episodes {
       results {
         id
@@ -15,6 +15,12 @@ const GET_EPISODES = gql`
   }
 `;
 
+type Episode = {
+  id: string;
+  name: string;
+  episode: string;
+};
+
 export default function EpisodesPage() {
   const { data, loading, error } = useQuery(GET_EPISODES);
 
@@ -22,19 +28,18 @@ export default function EpisodesPage() {
   if (error) return <p>Error loading episodes</p>;
 
   return (
-    <div>
+    <main style={{ padding: "20px" }}>
       <h1>Episodes</h1>
 
-      {data.episodes.results.map((ep: any) => (
-        <div key={ep.id}>
-          <p>
-            {ep.name} ({ep.episode})
-          </p>
-          <Link href={`/episodes/${ep.id}`}>
-            View Episode
-          </Link>
-        </div>
-      ))}
-    </div>
+      <ul>
+        {data.episodes.results.map((ep: Episode) => (
+          <li key={ep.id}>
+            <Link href={`/episodes/${ep.id}`}>
+              {ep.name} ({ep.episode})
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </main>
   );
 }
