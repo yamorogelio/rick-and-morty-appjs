@@ -1,17 +1,15 @@
 "use client";
 
-import React from "react";
-import { ApolloClient, InMemoryCache, HttpLink } from "@apollo/client"; // ✅ ApolloClient comes from here
-import { ApolloProvider } from "@apollo/client/react"; // ✅ ApolloProvider from react
+import { ApolloClient, InMemoryCache, HttpLink } from "@apollo/client";
+import { ApolloProvider } from "@apollo/client/react";
 
 type Props = {
   children: React.ReactNode;
 };
 
-// Apollo Client setup
 const client = new ApolloClient({
   link: new HttpLink({
-    uri: "https://rickandmortyapi.com/graphql", // GraphQL endpoint
+    uri: "https://rickandmortyapi.com/graphql",
   }),
   cache: new InMemoryCache(),
 });
