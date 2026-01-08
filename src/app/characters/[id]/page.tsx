@@ -1,11 +1,9 @@
 "use client";
 
-import React from "react";
-import { gql } from "@apollo/client"; // ✅ gql from here
-import { useQuery } from "@apollo/client/react"; // ✅ useQuery from react
+import { gql } from "@apollo/client";
+import { useQuery } from "@apollo/client/react";
 import { useParams } from "next/navigation";
 
-// GraphQL query to get character by id
 const GET_CHARACTER = gql`
   query GetCharacter($id: ID!) {
     character(id: $id) {
@@ -40,28 +38,32 @@ type Character = {
   episode: Episode[];
 };
 
-export default function CharacterPage() {
-  const params = useParams();
-  const { id } = params as { id: string };
+type CharacterData = {
+  character: Character;
+};
 
-  const { data, loading, error } = useQuery(GET_CHARACTER, {
-    variables: { id },
-  });
+export default function CharacterPage() {
+  const { id } = useParams<{ id: string }>();
+
+  const { data, loading, error } =
+    useQuery<CharacterData>(GET_CHARACTER, {
+      variables: { id },
+    });
 
   if (loading) return <p>Loading character...</p>;
-  if (error) return <p>Error loading character</p>;
+  if (error || !data) return <p>Error loading character</p>;
 
-  const char: Character = data.character;
+  const char = data.character;
 
   return (
-    <main style={{ padding: "20px" }}>
+    <main style={{ padding: 20 }}>
       <h1>{char.name}</h1>
-      <img src={char.image} alt={char.name} width={300} />
+      <img src={char.image} width={300} />
       <p>Status: {char.status}</p>
       <p>Species: {char.species}</p>
       <p>Gender: {char.gender}</p>
 
-      <h2>Episodes:</h2>
+      <h3>Episodes</h3>
       <ul>
         {char.episode.map((ep) => (
           <li key={ep.id}>

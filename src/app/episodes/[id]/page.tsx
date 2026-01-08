@@ -1,6 +1,7 @@
 "use client";
 
-import { gql, useQuery } from "@apollo/client";
+import { gql } from "@apollo/client";
+import { useQuery } from "@apollo/client/react";
 
 const GET_EPISODE = gql`
   query GetEpisode($id: ID!) {
@@ -16,31 +17,36 @@ const GET_EPISODE = gql`
   }
 `;
 
-type PageProps = {
-  params: {
-    id: string;
+type EpisodeData = {
+  episode: {
+    name: string;
+    episode: string;
+    air_date: string;
+    characters: { id: string; name: string }[];
   };
 };
 
-export default function EpisodePage({ params }: PageProps) {
-  const { data, loading, error } = useQuery(GET_EPISODE, {
-    variables: { id: params.id },
-  });
+export default function EpisodePage({
+  params,
+}: {
+  params: { id: string };
+}) {
+  const { data, loading, error } =
+    useQuery<EpisodeData>(GET_EPISODE, {
+      variables: { id: params.id },
+    });
 
   if (loading) return <p>Loading episode...</p>;
-  if (error) return <p>Error loading episode</p>;
-
-  const episode = data.episode;
+  if (error || !data) return <p>Error loading episode</p>;
 
   return (
-    <main style={{ padding: "20px" }}>
-      <h1>{episode.name}</h1>
-      <p>Episode: {episode.episode}</p>
-      <p>Air Date: {episode.air_date}</p>
+    <main style={{ padding: 20 }}>
+      <h1>{data.episode.name}</h1>
+      <p>{data.episode.episode}</p>
+      <p>{data.episode.air_date}</p>
 
-      <h3>Characters:</h3>
       <ul>
-        {episode.characters.map((char: { id: string; name: string }) => (
+        {data.episode.characters.map((char) => (
           <li key={char.id}>{char.name}</li>
         ))}
       </ul>
