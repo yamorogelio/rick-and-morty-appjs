@@ -12,7 +12,7 @@ const client = new ApolloClient({
     uri: "https://rickandmortyapi.com/graphql",
   }),
   cache: new InMemoryCache(),
-});
+}); 
 
 export default function Providers({ children }: Props) {
   return <ApolloProvider client={client}>{children}</ApolloProvider>;

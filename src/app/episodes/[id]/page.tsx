@@ -49,45 +49,158 @@ export default function EpisodeDetailsPage() {
     variables: { id: params.id },
   });
 
-  if (loading) return <p>Loading episode...</p>;
-  if (error || !data) return <p>Error loading episode</p>;
+  if (loading)
+    return <p style={{ textAlign: "center", color: "#fff" }}>Loading episode...</p>;
+
+  if (error || !data)
+    return <p style={{ textAlign: "center", color: "red" }}>Error loading episode</p>;
 
   const { name, episode, characters } = data.episode;
 
   return (
-    <main style={{ padding: "30px" }}>
-      <h1>
-        {episode} - {name}
-      </h1>
-
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))",
-          gap: "20px",
-        }}
-      >
-        {characters.map((char) => (
-          <div
-            key={char.id}
+    <main
+      style={{
+        minHeight: "100vh",
+        padding: "60px 20px",
+        background:
+          "radial-gradient(circle at 20% 10%, #22c55e33, transparent 40%), radial-gradient(circle at 80% 0%, #0ea5e933, transparent 35%), linear-gradient(180deg, #020617, #020617)",
+      }}
+    >
+      <div style={{ maxWidth: "1400px", margin: "0 auto" }}>
+        {/* Episode Header */}
+        <div
+          style={{
+            textAlign: "center",
+            marginBottom: "60px",
+          }}
+        >
+          <h1
             style={{
-              border: "1px solid #ddd",
-              borderRadius: "10px",
-              padding: "10px",
-              textAlign: "center",
+              fontSize: "46px",
+              fontWeight: "900",
+              letterSpacing: "1.5px",
+              color: "#ecfeff",
+              textShadow:
+                "0 0 25px rgba(34,197,94,0.8), 0 0 60px rgba(14,165,233,0.4)",
             }}
           >
-            <img
-              src={char.image}
-              alt={char.name}
-              style={{ width: "100%", borderRadius: "8px" }}
-            />
-            <h3>{char.name}</h3>
-            <p>Species: {char.species}</p>
-            <p>Status: {char.status}</p>
-            <p>Gender: {char.gender}</p>
-          </div>
-        ))}
+            {episode}
+          </h1>
+
+          <p
+            style={{
+              marginTop: "10px",
+              fontSize: "22px",
+              color: "#99f6e4",
+            }}
+          >
+            {name}
+          </p>
+        </div>
+
+        {/* Characters Grid */}
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))",
+            gap: "40px",
+          }}
+        >
+          {characters.map((char) => (
+            <div
+              key={char.id}
+              style={{
+                position: "relative",
+                borderRadius: "22px",
+                overflow: "hidden",
+                background:
+                  "linear-gradient(180deg, rgba(255,255,255,0.14), rgba(255,255,255,0.05))",
+                backdropFilter: "blur(16px)",
+                border: "1px solid rgba(34,197,94,0.35)",
+                boxShadow: "0 25px 60px rgba(0,0,0,0.55)",
+                transition: "all 0.4s ease",
+                cursor: "pointer",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform =
+                  "translateY(-14px) scale(1.04)";
+                e.currentTarget.style.boxShadow =
+                  "0 35px 90px rgba(34,197,94,0.6)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform =
+                  "translateY(0) scale(1)";
+                e.currentTarget.style.boxShadow =
+                  "0 25px 60px rgba(0,0,0,0.55)";
+              }}
+            >
+              {/* Image */}
+              <img
+                src={char.image}
+                alt={char.name}
+                style={{
+                  width: "100%",
+                  height: "260px",
+                  objectFit: "cover",
+                }}
+              />
+  
+              {/* Overlay */}
+              <div
+                style={{
+                  position: "absolute",
+                  inset: 0,
+                  background:
+                    "linear-gradient(to top, rgba(2,6,23,0.9), rgba(2,6,23,0.1), transparent)",
+                }}
+              />
+
+              {/* Character Info */}
+              <div
+                style={{
+                  position: "absolute",
+                  bottom: 0,
+                  width: "100%",
+                  padding: "18px",
+                  textAlign: "center",
+                  color: "#ecfeff",
+                }}
+              >
+                <h3
+                  style={{
+                    margin: 0,
+                    fontSize: "20px",
+                    fontWeight: "900",
+                    textShadow:
+                      "0 0 15px rgba(34,197,94,0.7)",
+                  }}
+                >
+                  {char.name}
+                </h3>
+
+                <p style={{ margin: "6px 0", fontSize: "14px", color: "#a7f3d0" }}>
+                  {char.species} • {char.gender}
+                </p>
+
+                <p
+                  style={{
+                    margin: 0,
+                    fontSize: "14px",
+                    fontWeight: "700",
+                    color:
+                      char.status === "Alive"
+                        ? "#4ade80"
+                        : char.status === "Dead"
+                        ? "#f87171"
+                        : "#facc15",
+                  }}
+                >
+                  {char.status}
+                </p>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     </main>
   );

@@ -2,7 +2,7 @@
 
 import { gql } from "@apollo/client";
 import { useQuery } from "@apollo/client/react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 
 const GET_CHARACTER = gql`
   query GetCharacter($id: ID!) {
@@ -44,73 +44,194 @@ type CharacterData = {
 
 export default function CharacterPage() {
   const { id } = useParams<{ id: string }>();
+  const router = useRouter();
 
   const { data, loading, error } = useQuery<CharacterData>(GET_CHARACTER, {
-    variables: { id },
+    variables: { id },  
   });
 
-  if (loading) return <p style={{ textAlign: "center" }}>Loading character...</p>;
-  if (error || !data) return <p style={{ textAlign: "center", color: "red" }}>Error loading character</p>;
+  if (loading)
+    return <p style={{ textAlign: "center", color: "#fff" }}>Loading character...</p>;
+
+  if (error || !data)
+    return <p style={{ textAlign: "center", color: "#ff6b6b" }}>Error loading character</p>;
 
   const char = data.character;
 
   return (
     <main
       style={{
-        padding: 20,
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        fontFamily: "Arial, sans-serif",
-        backgroundColor: "#f5f5f5",
         minHeight: "100vh",
+        padding: "60px 20px",
+        background:
+          "radial-gradient(circle at 20% 10%, #0f172a, transparent 40%), radial-gradient(circle at 80% 0%, #1e3a8a, transparent 35%), linear-gradient(180deg, #0f172a, #0f172a)",
+        display: "flex",
+        justifyContent: "center",
       }}
     >
       <div
         style={{
           display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          backgroundColor: "#fff",
-          padding: 30,
-          borderRadius: 15,
-          boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
-          maxWidth: 600,
+          gap: "40px",
+          maxWidth: "1000px",
           width: "100%",
         }}
       >
-        <h1 style={{ fontSize: 32, marginBottom: 20, color: "#333" }}>{char.name}</h1>
-        <img
-          src={char.image}
-          alt={char.name}
-          width={250}
-          height={250}
-          style={{ borderRadius: "50%", marginBottom: 20, objectFit: "cover" }}
-        />
+        {/* Left: Profile (fixed) */}
+        <div
+          style={{
+            flex: "0 0 320px",
+            position: "sticky",
+            top: "20px",
+            alignSelf: "flex-start",
+            background: "#1e293b",
+            borderRadius: "28px",
+            boxShadow: "0 20px 60px rgba(0,0,0,0.7)",
+            padding: "40px",
+            color: "#f8fafc",
+          }}
+        >
+          {/* Back Button */}
+          <button
+            onClick={() => router.push("/")}
+            style={{
+              padding: "8px 16px",
+              marginBottom: "20px",
+              borderRadius: "12px",
+              background: "#22c55e",
+              color: "#1e293b",
+              fontWeight: "700",
+              border: "none",
+              cursor: "pointer",
+              transition: "transform 0.2s, box-shadow 0.2s",
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = "translateY(-2px)";
+              e.currentTarget.style.boxShadow = "0 5px 15px rgba(34,197,94,0.6)";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = "translateY(0)";
+              e.currentTarget.style.boxShadow = "none";
+            }}
+          >
+            ← Back
+          </button>
 
-        <div style={{ display: "flex", justifyContent: "space-between", width: "100%", marginBottom: 20 }}>
-          <p><strong>Status:</strong> {char.status}</p>
-          <p><strong>Species:</strong> {char.species}</p>
-          <p><strong>Gender:</strong> {char.gender}</p>
+          {/* Name */}
+          <h1
+            style={{
+              textAlign: "center",
+              fontSize: "44px",
+              fontWeight: "900",
+              marginBottom: "30px",
+              letterSpacing: "1.5px",
+              color: "#fef08a",
+              textShadow:
+                "0 0 15px rgba(254, 208, 8,0.6), 0 0 30px rgba(34,197,94,0.4)",
+            }}
+          >
+            {char.name}
+          </h1>
+
+          {/* Image */}
+          <div style={{ display: "flex", justifyContent: "center", marginBottom: "30px" }}>
+            <img
+              src={char.image}
+              alt={char.name}
+              style={{
+                width: "260px",
+                height: "260px",
+                borderRadius: "50%",
+                objectFit: "cover",
+                border: "6px solid #22c55e",
+                boxShadow:
+                  "0 0 30px rgba(34,197,94,0.6), 0 0 60px rgba(34,197,94,0.4)",
+              }}
+            />
+          </div>
+
+          {/* Info Badges */}
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              gap: "20px",
+              flexWrap: "wrap",
+              marginBottom: "40px",
+            }}
+          >
+            {[
+              { label: "Status", value: char.status },
+              { label: "Species", value: char.species },
+              { label: "Gender", value: char.gender },
+            ].map((item) => (
+              <div
+                key={item.label}
+                style={{
+                  padding: "14px 22px",
+                  borderRadius: "999px",
+                  fontWeight: "700",
+                  background: "#334155",
+                  color: "#fef08a",
+                  boxShadow: "0 0 15px rgba(34,197,94,0.4)",
+                }}
+              >
+                <strong>{item.label}:</strong> {item.value}
+              </div>
+            ))}
+          </div>
         </div>
 
-        <h3 style={{ marginTop: 10, color: "#555" }}>Episodes</h3>
-        <ul style={{ listStyle: "none", padding: 0, width: "100%" }}>
-          {char.episode.map((ep) => (
-            <li
-              key={ep.id}
-              style={{
-                backgroundColor: "#f0f0f0",
-                marginBottom: 8,
-                padding: 10,
-                borderRadius: 8,
-                boxShadow: "0 2px 5px rgba(0,0,0,0.05)",
-              }}
-            >
-              <strong>{ep.episode}</strong> - {ep.name}
-            </li>
-          ))}
-        </ul>
+        {/* Right: Episodes (scrollable) */}
+        <div
+          style={{
+            flex: 1,
+            maxHeight: "85vh",
+            overflowY: "auto",
+          }}
+        >
+          <h3
+            style={{
+              fontSize: "26px",
+              marginBottom: "20px",
+              textAlign: "center",
+              color: "#fef08a",
+              textShadow: "0 0 10px rgba(34,197,94,0.5)",
+            }}
+          >
+            Episodes Appeared In
+          </h3>
+
+          <ul style={{ listStyle: "none", padding: 0 }}>
+            {char.episode.map((ep) => (
+              <li
+                key={ep.id}
+                style={{
+                  marginBottom: "14px",
+                  padding: "16px 20px",
+                  borderRadius: "16px",
+                  background: "#1e293b",
+                  color: "#f8fafc",
+                  boxShadow: "0 5px 20px rgba(0,0,0,0.4)",     
+                  transition: "transform 0.3s ease, box-shadow 0.3s ease",
+                  cursor: "pointer",
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.transform = "translateX(10px)";
+                  e.currentTarget.style.boxShadow =
+                    "0 0 30px rgba(34,197,94,0.6)";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = "translateX(0)";
+                  e.currentTarget.style.boxShadow =
+                    "0 5px 20px rgba(0,0,0,0.4)";
+                }}
+              >
+                <strong style={{ color: "#22c55e" }}>{ep.episode}</strong> — {ep.name}
+              </li>
+            ))}
+          </ul>
+        </div>
       </div>
     </main>
   );
