@@ -3,6 +3,7 @@
 import { gql } from "@apollo/client";
 import { useQuery } from "@apollo/client/react";
 import { useParams } from "next/navigation";
+import Image from "next/image";
 
 /* GraphQL Query */
 const GET_EPISODE = gql`
@@ -68,12 +69,7 @@ export default function EpisodeDetailsPage() {
     >
       <div style={{ maxWidth: "1400px", margin: "0 auto" }}>
         {/* Episode Header */}
-        <div
-          style={{
-            textAlign: "center",
-            marginBottom: "60px",
-          }}
-        >
+        <div style={{ textAlign: "center", marginBottom: "60px" }}>
           <h1
             style={{
               fontSize: "46px",
@@ -87,13 +83,7 @@ export default function EpisodeDetailsPage() {
             {episode}
           </h1>
 
-          <p
-            style={{
-              marginTop: "10px",
-              fontSize: "22px",
-              color: "#99f6e4",
-            }}
-          >
+          <p style={{ marginTop: "10px", fontSize: "22px", color: "#99f6e4" }}>
             {name}
           </p>
         </div>
@@ -135,16 +125,22 @@ export default function EpisodeDetailsPage() {
               }}
             >
               {/* Image */}
-              <img
-                src={char.image}
-                alt={char.name}
+              <div
                 style={{
+                  position: "relative",
                   width: "100%",
                   height: "260px",
-                  objectFit: "cover",
                 }}
-              />
-  
+              >
+                <Image
+                  src={char.image}
+                  alt={char.name}
+                  fill
+                  style={{ objectFit: "cover" }}
+                  sizes="(max-width: 768px) 100vw, 240px"
+                />
+              </div>
+
               {/* Overlay */}
               <div
                 style={{

@@ -3,14 +3,17 @@
 import { gql } from "@apollo/client";
 import { useQuery } from "@apollo/client/react";
 import Link from "next/link";
-import { MdMovie } from "react-icons/md";
+import Image from "next/image";
+import { MdMovie, MdSearch } from "react-icons/md";
+import { useState, useEffect, useRef } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 
 /* GraphQL Query */
 const GET_CHARACTERS = gql`
   query GetCharacters {
     characters {
-      results { 
-        id  
+      results {
+        id
         name
         image
       }
@@ -32,13 +35,84 @@ type CharactersData = {
 };
 
 export default function HomePage() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const initialSearch = searchParams.get("search") || "";
+
+  const [search, setSearch] = useState(initialSearch);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [activeIndex, setActiveIndex] = useState(-1);
+
+  const dropdownRef = useRef<HTMLDivElement>(null);
+  const itemRefs = useRef<(HTMLDivElement | null)[]>([]);
+
   const { data, loading, error } = useQuery<CharactersData>(GET_CHARACTERS);
 
+  /* Close dropdown when clicking outside */
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setDropdownOpen(false);
+        setActiveIndex(-1);
+      }
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, []);
+
+  /* Sync search to URL */
+  useEffect(() => {
+    const query = search ? `?search=${encodeURIComponent(search)}` : "";
+    router.replace(`${window.location.pathname}${query}`, { scroll: false });
+  }, [search, router]);
+
+  /* Auto-scroll active dropdown item */
+  useEffect(() => {
+    if (activeIndex >= 0 && itemRefs.current[activeIndex]) {
+      itemRefs.current[activeIndex]?.scrollIntoView({ block: "nearest" });
+    }
+  }, [activeIndex]);
+
   if (loading)
-    return <p style={{ textAlign: "center", color: "#fff" }}>Loading characters...</p>;
+    return <p style={{ textAlign: "center", color: "#fff" }}>Loading...</p>;
 
   if (error || !data)
     return <p style={{ textAlign: "center", color: "red" }}>Error loading characters</p>;
+
+  const filteredCharacters = data.characters.results.filter((char) =>
+    char.name.toLowerCase().includes(search.toLowerCase())
+  );
+
+  /* Keyboard navigation */
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (!dropdownOpen) return;
+
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      setActiveIndex((prev) =>
+        prev < filteredCharacters.length - 1 ? prev + 1 : 0
+      );
+    }
+
+    if (e.key === "ArrowUp") {
+      e.preventDefault();
+      setActiveIndex((prev) =>
+        prev > 0 ? prev - 1 : filteredCharacters.length - 1
+      );
+    }
+
+    if (e.key === "Enter" && activeIndex >= 0) {
+      e.preventDefault();
+      setSearch(filteredCharacters[activeIndex].name);
+      setDropdownOpen(false);
+      setActiveIndex(-1);
+    }
+
+    if (e.key === "Escape") {
+      setDropdownOpen(false);
+      setActiveIndex(-1);
+    }
+  };
 
   return (
     <main
@@ -50,8 +124,130 @@ export default function HomePage() {
       }}
     >
       <div style={{ maxWidth: "1500px", margin: "0 auto" }}>
-        {/* Top Action */}
-        <div style={{ display: "flex", justifyContent: "flex-end" }}>
+        {/* Hero */}
+        <h1
+          style={{
+            textAlign: "center",
+            fontSize: "50px",
+            fontWeight: "900",
+            color: "#ecfeff",
+            letterSpacing: "2px",
+            textShadow:
+              "0 0 25px rgba(34,197,94,0.8), 0 0 60px rgba(14,165,233,0.4)",
+          }}
+        >
+          Rick & Morty Multiverse
+        </h1>
+
+        <p
+          style={{
+            textAlign: "center",
+            margin: "15px 0 40px",
+            fontSize: "19px",
+            color: "#99f6e4",
+          }}
+        >
+          Dive into infinite realities and iconic characters
+        </p>
+
+        {/* Search + Episodes */}
+        <div
+          ref={dropdownRef}
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            marginBottom: "50px",
+          }}
+        >
+          {/* Search */}
+          <div style={{ position: "relative", maxWidth: "250px", width: "100%" }}>
+            <input
+              type="text"
+              placeholder="Search characters..."
+              value={search}
+              onChange={(e) => {
+                setSearch(e.target.value);
+                setDropdownOpen(true);
+                setActiveIndex(-1);
+              }}
+              onKeyDown={handleKeyDown}
+              onFocus={() => setDropdownOpen(true)}
+              style={{
+                width: "100%",
+                padding: "8px 12px 8px 36px",
+                borderRadius: "24px",
+                border: "1px solid rgba(255,255,255,0.3)",
+                backgroundColor: "#1b1f2a",
+                color: "#fff",
+                outline: "none",
+              }}
+            />
+
+            <MdSearch
+              size={16}
+              style={{
+                position: "absolute",
+                top: "50%",
+                left: "12px",
+                transform: "translateY(-50%)",
+                color: "#fff",
+              }}
+            />
+
+            {/* Dropdown (NO REDIRECT) */}
+            {dropdownOpen && search && filteredCharacters.length > 0 && (
+              <div
+                className="hide-scrollbar"
+                style={{
+                  position: "absolute",
+                  top: "40px",
+                  width: "100%",
+                  background: "#1b1f2a",
+                  borderRadius: "12px",
+                  maxHeight: "250px",
+                  overflowY: "auto",
+                  zIndex: 100,
+                }}
+              >
+                {filteredCharacters.map((char, index) => (
+                  <div
+                    key={char.id}
+                    ref={(el) => { itemRefs.current[index] = el; }} // ✅ fixed
+                    onClick={() => {
+                      setSearch(char.name);
+                      setDropdownOpen(false);
+                      setActiveIndex(-1);
+                    }}
+                    onMouseEnter={() => setActiveIndex(index)}
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "10px",
+                      padding: "8px 12px",
+                      cursor: "pointer",
+                      color: "#fff",
+                      background:
+                        index === activeIndex
+                          ? "rgba(34,197,94,0.35)"
+                          : "transparent",
+                    }}
+                  >
+                    <Image
+                      src={char.image}
+                      alt={char.name}
+                      width={36}
+                      height={36}
+                      style={{ borderRadius: "50%", objectFit: "cover" }}
+                    />
+                    {char.name}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Episodes Button */}
           <Link
             href="/episodes"
             style={{
@@ -73,34 +269,7 @@ export default function HomePage() {
           </Link>
         </div>
 
-        {/* Hero */}
-        <h1
-          style={{
-            textAlign: "center",
-            marginTop: "50px",
-            fontSize: "50px",
-            fontWeight: "900",
-            color: "#ecfeff",
-            letterSpacing: "2px",
-            textShadow:
-              "0 0 25px rgba(34,197,94,0.8), 0 0 60px rgba(14,165,233,0.4)",
-          }}
-        >
-          Rick & Morty Multiverse
-        </h1>
-
-        <p
-          style={{
-            textAlign: "center",
-            margin: "15px 0 70px",
-            fontSize: "19px",
-            color: "#99f6e4",
-          }}
-        >
-          Dive into infinite realities and iconic characters
-        </p>
-
-        {/* Cards */}
+        {/* Cards (IMAGE DESIGN UNCHANGED) */}
         <div
           style={{
             display: "grid",
@@ -108,7 +277,7 @@ export default function HomePage() {
             gap: "45px",
           }}
         >
-          {data.characters.results.map((char) => (
+          {filteredCharacters.map((char) => (
             <Link
               key={char.id}
               href={`/characters/${char.id}`}
@@ -119,8 +288,7 @@ export default function HomePage() {
                   position: "relative",
                   borderRadius: "24px",
                   overflow: "hidden",
-                  boxShadow:
-                    "0 30px 80px rgba(0,0,0,0.6)",
+                  boxShadow: "0 30px 80px rgba(0,0,0,0.6)",
                   transition: "all 0.45s ease",
                   background:
                     "linear-gradient(180deg, rgba(34,197,94,0.2), rgba(0,0,0,0.2))",
@@ -138,18 +306,16 @@ export default function HomePage() {
                     "0 30px 80px rgba(0,0,0,0.6)";
                 }}
               >
-                {/* Image */}
-                <img
-                  src={char.image}
-                  alt={char.name}
-                  style={{
-                    width: "100%",
-                    height: "300px",
-                    objectFit: "cover",
-                  }}
-                />
+                <div style={{ position: "relative", width: "100%", height: "300px" }}>
+                  <Image
+                    src={char.image}
+                    alt={char.name}
+                    fill
+                    style={{ objectFit: "cover" }}
+                    sizes="(max-width: 768px) 100vw, 260px"
+                  />
+                </div>
 
-                {/* Overlay */}
                 <div
                   style={{
                     position: "absolute",
@@ -159,7 +325,6 @@ export default function HomePage() {
                   }}
                 />
 
-                {/* Name */}
                 <div
                   style={{
                     position: "absolute",
@@ -175,8 +340,7 @@ export default function HomePage() {
                       fontSize: "22px",
                       fontWeight: "900",
                       color: "#ecfeff",
-                      textShadow:
-                        "0 0 15px rgba(34,197,94,0.7)",
+                      textShadow: "0 0 15px rgba(34,197,94,0.7)",
                     }}
                   >
                     {char.name}
@@ -187,6 +351,12 @@ export default function HomePage() {
           ))}
         </div>
       </div>
+
+      <style jsx>{`
+        .hide-scrollbar::-webkit-scrollbar {
+          display: none;
+        }
+      `}</style>
     </main>
   );
 }

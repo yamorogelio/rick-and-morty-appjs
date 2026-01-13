@@ -3,6 +3,7 @@
 import { gql } from "@apollo/client";
 import { useQuery } from "@apollo/client/react";
 import { useParams, useRouter } from "next/navigation";
+import Image from "next/image";
 
 const GET_CHARACTER = gql`
   query GetCharacter($id: ID!) {
@@ -47,7 +48,7 @@ export default function CharacterPage() {
   const router = useRouter();
 
   const { data, loading, error } = useQuery<CharacterData>(GET_CHARACTER, {
-    variables: { id },  
+    variables: { id },
   });
 
   if (loading)
@@ -77,7 +78,7 @@ export default function CharacterPage() {
           width: "100%",
         }}
       >
-        {/* Left: Profile (fixed) */}
+        {/* Left: Profile */}
         <div
           style={{
             flex: "0 0 320px",
@@ -103,15 +104,6 @@ export default function CharacterPage() {
               fontWeight: "700",
               border: "none",
               cursor: "pointer",
-              transition: "transform 0.2s, box-shadow 0.2s",
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.transform = "translateY(-2px)";
-              e.currentTarget.style.boxShadow = "0 5px 15px rgba(34,197,94,0.6)";
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.transform = "translateY(0)";
-              e.currentTarget.style.boxShadow = "none";
             }}
           >
             ← Back
@@ -134,19 +126,26 @@ export default function CharacterPage() {
           </h1>
 
           {/* Image */}
-          <div style={{ display: "flex", justifyContent: "center", marginBottom: "30px" }}>
-            <img
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              marginBottom: "30px",
+            }}
+          >
+            <Image
               src={char.image}
               alt={char.name}
+              width={260}
+              height={260}
               style={{
-                width: "260px",
-                height: "260px",
                 borderRadius: "50%",
                 objectFit: "cover",
                 border: "6px solid #22c55e",
                 boxShadow:
                   "0 0 30px rgba(34,197,94,0.6), 0 0 60px rgba(34,197,94,0.4)",
               }}
+              priority
             />
           </div>
 
@@ -182,7 +181,7 @@ export default function CharacterPage() {
           </div>
         </div>
 
-        {/* Right: Episodes (scrollable) */}
+        {/* Right: Episodes */}
         <div
           style={{
             flex: 1,
@@ -196,7 +195,6 @@ export default function CharacterPage() {
               marginBottom: "20px",
               textAlign: "center",
               color: "#fef08a",
-              textShadow: "0 0 10px rgba(34,197,94,0.5)",
             }}
           >
             Episodes Appeared In
@@ -212,19 +210,7 @@ export default function CharacterPage() {
                   borderRadius: "16px",
                   background: "#1e293b",
                   color: "#f8fafc",
-                  boxShadow: "0 5px 20px rgba(0,0,0,0.4)",     
-                  transition: "transform 0.3s ease, box-shadow 0.3s ease",
-                  cursor: "pointer",
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.transform = "translateX(10px)";
-                  e.currentTarget.style.boxShadow =
-                    "0 0 30px rgba(34,197,94,0.6)";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.transform = "translateX(0)";
-                  e.currentTarget.style.boxShadow =
-                    "0 5px 20px rgba(0,0,0,0.4)";
+                  boxShadow: "0 5px 20px rgba(0,0,0,0.4)",
                 }}
               >
                 <strong style={{ color: "#22c55e" }}>{ep.episode}</strong> — {ep.name}
