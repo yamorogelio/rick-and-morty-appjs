@@ -16,6 +16,9 @@ const GET_CHARACTERS = gql`
         id
         name
         image
+        gender
+        status
+        species
       }
     }
   }
@@ -26,6 +29,9 @@ type Character = {
   id: string;
   name: string;
   image: string;
+  gender: string;
+  status: string;
+  species: string;
 };
 
 type CharactersData = {
@@ -40,6 +46,10 @@ export default function HomePage() {
   const initialSearch = searchParams.get("search") || "";
 
   const [search, setSearch] = useState(initialSearch);
+  const [gender, setGender] = useState("All");
+  const [status, setStatus] = useState("All");
+  const [species, setSpecies] = useState("All");
+
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [activeIndex, setActiveIndex] = useState(-1);
 
@@ -48,7 +58,6 @@ export default function HomePage() {
 
   const { data, loading, error } = useQuery<CharactersData>(GET_CHARACTERS);
 
-  /* Close dropdown when clicking outside */
   useEffect(() => {
     const handler = (e: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
@@ -60,59 +69,23 @@ export default function HomePage() {
     return () => document.removeEventListener("mousedown", handler);
   }, []);
 
-  /* Sync search to URL */
   useEffect(() => {
     const query = search ? `?search=${encodeURIComponent(search)}` : "";
     router.replace(`${window.location.pathname}${query}`, { scroll: false });
   }, [search, router]);
 
-  /* Auto-scroll active dropdown item */
-  useEffect(() => {
-    if (activeIndex >= 0 && itemRefs.current[activeIndex]) {
-      itemRefs.current[activeIndex]?.scrollIntoView({ block: "nearest" });
-    }
-  }, [activeIndex]);
-
-  if (loading)
-    return <p style={{ textAlign: "center", color: "#fff" }}>Loading...</p>;
-
+  if (loading) return <p style={{ textAlign: "center", color: "#fff" }}>Loading...</p>;
   if (error || !data)
     return <p style={{ textAlign: "center", color: "red" }}>Error loading characters</p>;
 
-  const filteredCharacters = data.characters.results.filter((char) =>
-    char.name.toLowerCase().includes(search.toLowerCase())
-  );
-
-  /* Keyboard navigation */
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (!dropdownOpen) return;
-
-    if (e.key === "ArrowDown") {
-      e.preventDefault();
-      setActiveIndex((prev) =>
-        prev < filteredCharacters.length - 1 ? prev + 1 : 0
-      );
-    }
-
-    if (e.key === "ArrowUp") {
-      e.preventDefault();
-      setActiveIndex((prev) =>
-        prev > 0 ? prev - 1 : filteredCharacters.length - 1
-      );
-    }
-
-    if (e.key === "Enter" && activeIndex >= 0) {
-      e.preventDefault();
-      setSearch(filteredCharacters[activeIndex].name);
-      setDropdownOpen(false);
-      setActiveIndex(-1);
-    }
-
-    if (e.key === "Escape") {
-      setDropdownOpen(false);
-      setActiveIndex(-1);
-    }
-  };
+  const filteredCharacters = data.characters.results.filter((char) => {
+    return (
+      char.name.toLowerCase().includes(search.toLowerCase()) &&
+      (gender === "All" || char.gender === gender) &&
+      (status === "All" || char.status === status) &&
+      (species === "All" || char.species === species)
+    );
+  });
 
   return (
     <main
@@ -124,127 +97,97 @@ export default function HomePage() {
       }}
     >
       <div style={{ maxWidth: "1500px", margin: "0 auto" }}>
-        {/* Hero */}
         <h1
           style={{
             textAlign: "center",
             fontSize: "50px",
             fontWeight: "900",
             color: "#ecfeff",
-            letterSpacing: "2px",
-            textShadow:
-              "0 0 25px rgba(34,197,94,0.8), 0 0 60px rgba(14,165,233,0.4)",
           }}
         >
           Rick & Morty Multiverse
         </h1>
 
-        <p
-          style={{
-            textAlign: "center",
-            margin: "15px 0 40px",
-            fontSize: "19px",
-            color: "#99f6e4",
-          }}
-        >
+        <p style={{ textAlign: "center", marginBottom: "40px", color: "#99f6e4" }}>
           Dive into infinite realities and iconic characters
         </p>
 
-        {/* Search + Episodes */}
+        {/* Search + Filters + Episodes */}
         <div
           ref={dropdownRef}
           style={{
             display: "flex",
             justifyContent: "space-between",
-            alignItems: "center",
+            alignItems: "flex-start",
             marginBottom: "50px",
           }}
         >
-          {/* Search */}
-          <div style={{ position: "relative", maxWidth: "250px", width: "100%" }}>
-            <input
-              type="text"
-              placeholder="Search characters..."
-              value={search}
-              onChange={(e) => {
-                setSearch(e.target.value);
-                setDropdownOpen(true);
-                setActiveIndex(-1);
-              }}
-              onKeyDown={handleKeyDown}
-              onFocus={() => setDropdownOpen(true)}
-              style={{
-                width: "100%",
-                padding: "8px 12px 8px 36px",
-                borderRadius: "24px",
-                border: "1px solid rgba(255,255,255,0.3)",
-                backgroundColor: "#1b1f2a",
-                color: "#fff",
-                outline: "none",
-              }}
-            />
-
-            <MdSearch
-              size={16}
-              style={{
-                position: "absolute",
-                top: "50%",
-                left: "12px",
-                transform: "translateY(-50%)",
-                color: "#fff",
-              }}
-            />
-
-            {/* Dropdown (NO REDIRECT) */}
-            {dropdownOpen && search && filteredCharacters.length > 0 && (
-              <div
-                className="hide-scrollbar"
+          {/* Search & Filters */}
+          <div style={{ maxWidth: "320px", width: "100%" }}>
+            {/* Search */}
+            <div style={{ position: "relative" }}>
+              <input
+                type="text"
+                placeholder="Search characters..."
+                value={search}
+                onChange={(e) => {
+                  setSearch(e.target.value);
+                  setDropdownOpen(true);
+                }}
+                onFocus={() => setDropdownOpen(true)}
+                style={{
+                  width: "100%",
+                  padding: "8px 12px 8px 36px",
+                  borderRadius: "24px",
+                  border: "1px solid rgba(255,255,255,0.3)",
+                  backgroundColor: "#1b1f2a",
+                  color: "#fff",
+                }}
+              />
+              <MdSearch
+                size={16}
                 style={{
                   position: "absolute",
-                  top: "40px",
-                  width: "100%",
-                  background: "#1b1f2a",
-                  borderRadius: "12px",
-                  maxHeight: "250px",
-                  overflowY: "auto",
-                  zIndex: 100,
+                  top: "50%",
+                  left: "12px",
+                  transform: "translateY(-50%)",
+                  color: "#fff",
                 }}
-              >
-                {filteredCharacters.map((char, index) => (
-                  <div
-                    key={char.id}
-                    ref={(el) => { itemRefs.current[index] = el; }} // ✅ fixed
-                    onClick={() => {
-                      setSearch(char.name);
-                      setDropdownOpen(false);
-                      setActiveIndex(-1);
-                    }}
-                    onMouseEnter={() => setActiveIndex(index)}
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "10px",
-                      padding: "8px 12px",
-                      cursor: "pointer",
-                      color: "#fff",
-                      background:
-                        index === activeIndex
-                          ? "rgba(34,197,94,0.35)"
-                          : "transparent",
-                    }}
-                  >
-                    <Image
-                      src={char.image}
-                      alt={char.name}
-                      width={36}
-                      height={36}
-                      style={{ borderRadius: "50%", objectFit: "cover" }}
-                    />
-                    {char.name}
-                  </div>
-                ))}
-              </div>
-            )}
+              />
+            </div>
+
+            {/* Unified Filters */}
+            <div
+              style={{
+                marginTop: "12px",
+                display: "grid",
+                gridTemplateColumns: "repeat(3, 1fr)",
+                gap: "8px",
+              }}
+            >
+              {[{ v: gender, s: setGender, o: ["All", "Male", "Female", "unknown"] },
+                { v: status, s: setStatus, o: ["All", "Alive", "Dead", "unknown"] },
+                { v: species, s: setSpecies, o: ["All", "Human", "Alien"] }
+              ].map((f, i) => (
+                <select
+                  key={i}
+                  value={f.v}
+                  onChange={(e) => f.s(e.target.value)}
+                  style={{
+                    padding: "8px",
+                    borderRadius: "14px",
+                    backgroundColor: "#1b1f2a",
+                    color: "#fff",
+                    border: "1px solid rgba(255,255,255,0.25)",
+                    fontSize: "13px",
+                  }}
+                >
+                  {f.o.map((opt) => (
+                    <option key={opt}>{opt}</option>
+                  ))}
+                </select>
+              ))}
+            </div>
           </div>
 
           {/* Episodes Button */}
@@ -260,8 +203,6 @@ export default function HomePage() {
               fontWeight: "800",
               color: "#022c22",
               background: "linear-gradient(135deg, #4ade80, #22c55e)",
-              boxShadow:
-                "0 0 30px rgba(34,197,94,0.7), inset 0 0 10px rgba(255,255,255,0.5)",
             }}
           >
             <MdMovie size={24} />
@@ -269,7 +210,7 @@ export default function HomePage() {
           </Link>
         </div>
 
-        {/* Cards (IMAGE DESIGN UNCHANGED) */}
+        {/* Cards */}
         <div
           style={{
             display: "grid",
@@ -278,85 +219,25 @@ export default function HomePage() {
           }}
         >
           {filteredCharacters.map((char) => (
-            <Link
-              key={char.id}
-              href={`/characters/${char.id}`}
-              style={{ textDecoration: "none" }}
-            >
+            <Link key={char.id} href={`/characters/${char.id}`} style={{ textDecoration: "none" }}>
               <div
                 style={{
-                  position: "relative",
                   borderRadius: "24px",
                   overflow: "hidden",
                   boxShadow: "0 30px 80px rgba(0,0,0,0.6)",
-                  transition: "all 0.45s ease",
-                  background:
-                    "linear-gradient(180deg, rgba(34,197,94,0.2), rgba(0,0,0,0.2))",
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.transform =
-                    "translateY(-18px) scale(1.05)";
-                  e.currentTarget.style.boxShadow =
-                    "0 45px 120px rgba(34,197,94,0.6)";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.transform =
-                    "translateY(0) scale(1)";
-                  e.currentTarget.style.boxShadow =
-                    "0 30px 80px rgba(0,0,0,0.6)";
                 }}
               >
-                <div style={{ position: "relative", width: "100%", height: "300px" }}>
-                  <Image
-                    src={char.image}
-                    alt={char.name}
-                    fill
-                    style={{ objectFit: "cover" }}
-                    sizes="(max-width: 768px) 100vw, 260px"
-                  />
+                <div style={{ position: "relative", height: "300px" }}>
+                  <Image src={char.image} alt={char.name} fill style={{ objectFit: "cover" }} />
                 </div>
-
-                <div
-                  style={{
-                    position: "absolute",
-                    inset: 0,
-                    background:
-                      "linear-gradient(to top, rgba(2,6,23,0.9), rgba(2,6,23,0.1), transparent)",
-                  }}
-                />
-
-                <div
-                  style={{
-                    position: "absolute",
-                    bottom: 0,
-                    width: "100%",
-                    padding: "22px",
-                    textAlign: "center",
-                  }}
-                >
-                  <h3
-                    style={{
-                      margin: 0,
-                      fontSize: "22px",
-                      fontWeight: "900",
-                      color: "#ecfeff",
-                      textShadow: "0 0 15px rgba(34,197,94,0.7)",
-                    }}
-                  >
-                    {char.name}
-                  </h3>
+                <div style={{ padding: "18px", textAlign: "center", color: "#ecfeff" }}>
+                  <strong>{char.name}</strong>
                 </div>
               </div>
             </Link>
           ))}
         </div>
       </div>
-
-      <style jsx>{`
-        .hide-scrollbar::-webkit-scrollbar {
-          display: none;
-        }
-      `}</style>
     </main>
   );
 }

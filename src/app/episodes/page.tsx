@@ -3,6 +3,7 @@
 import { gql } from "@apollo/client";
 import { useQuery } from "@apollo/client/react";
 import Link from "next/link";
+import { MdArrowBack } from "react-icons/md";
 
 const GET_EPISODES = gql`
   query GetEpisodes {
@@ -47,6 +48,31 @@ export default function EpisodesPage() {
       }}
     >
       <div style={{ maxWidth: "1300px", margin: "0 auto" }}>
+        
+        {/* Back to Home */}
+        <Link
+          href="/"
+          style={{
+            display: "inline-flex",
+            alignItems: "center",
+            gap: "8px",
+            marginBottom: "30px",
+            padding: "10px 18px",
+            borderRadius: "999px",
+            textDecoration: "none",
+            fontWeight: "700",
+            color: "#ecfeff",
+            background: "rgba(34,197,94,0.15)",
+            border: "1px solid rgba(34,197,94,0.4)",
+            backdropFilter: "blur(10px)",
+            boxShadow: "0 0 25px rgba(34,197,94,0.35)",
+            transition: "all 0.3s ease",
+          }}
+        >
+          <MdArrowBack size={18} />
+          Back to Home
+        </Link>
+
         {/* Title */}
         <h1
           style={{
@@ -86,8 +112,7 @@ export default function EpisodesPage() {
                     "linear-gradient(180deg, rgba(255,255,255,0.14), rgba(255,255,255,0.05))",
                   backdropFilter: "blur(16px)",
                   border: "1px solid rgba(34,197,94,0.35)",
-                  boxShadow:
-                    "0 25px 60px rgba(0,0,0,0.55)",
+                  boxShadow: "0 25px 60px rgba(0,0,0,0.55)",
                   transition: "all 0.4s ease",
                   transform: `translateY(${index % 2 === 0 ? "0px" : "10px"})`,
                   cursor: "pointer",

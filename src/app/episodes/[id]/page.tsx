@@ -4,6 +4,8 @@ import { gql } from "@apollo/client";
 import { useQuery } from "@apollo/client/react";
 import { useParams } from "next/navigation";
 import Image from "next/image";
+import Link from "next/link";
+import { MdArrowBack } from "react-icons/md";
 
 /* GraphQL Query */
 const GET_EPISODE = gql`
@@ -68,6 +70,32 @@ export default function EpisodeDetailsPage() {
       }}
     >
       <div style={{ maxWidth: "1400px", margin: "0 auto" }}>
+        
+        {/* Back to Episodes */}
+        <Link
+          href="/episodes"
+          style={{
+            display: "inline-flex",
+            alignItems: "center",
+            gap: "8px",
+            marginBottom: "35px",
+            padding: "10px 18px",
+      
+            borderRadius: "999px",
+            textDecoration: "none",
+            fontWeight: "700",
+            color: "#ecfeff",
+            background: "rgba(34,197,94,0.15)",
+            border: "1px solid rgba(34,197,94,0.4)",
+            backdropFilter: "blur(10px)",
+            boxShadow: "0 0 25px rgba(34,197,94,0.35)",
+            transition: "all 0.3s ease",
+          }}
+        >
+          <MdArrowBack size={18} />
+          Back to Episodes
+        </Link>
+
         {/* Episode Header */}
         <div style={{ textAlign: "center", marginBottom: "60px" }}>
           <h1
