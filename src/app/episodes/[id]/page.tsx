@@ -5,7 +5,13 @@ import { useQuery } from "@apollo/client/react";
 import { useParams } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import { MdArrowBack } from "react-icons/md";
+import {
+  MdArrowBack,
+  MdClose,
+  MdChevronLeft,
+  MdChevronRight,
+} from "react-icons/md";
+import { useState } from "react";
 
 /* GraphQL Query */
 const GET_EPISODE = gql`
@@ -35,15 +41,26 @@ type Character = {
   gender: string;
 };
 
-type Episode = {
-  name: string;
-  episode: string;
-  characters: Character[];
+type EpisodeData = {
+  episode: {
+    name: string;
+    episode: string;
+    characters: Character[];
+  };
 };
 
-type EpisodeData = {
-  episode: Episode;
-};
+/* 🔹 Role Summary Generator */
+function getEpisodeRoleSummary(char: Character) {
+  if (char.status === "Alive") {
+    return `${char.name} actively participates in the events of this episode, interacting with other characters and playing a direct role in how the story develops.`;
+  }
+
+  if (char.status === "Dead") {
+    return `${char.name} appears in this episode as part of the storyline, where their background or past actions influence the situation and other characters.`;
+  }
+
+  return `${char.name} has a supporting presence in this episode, contributing through brief but meaningful interactions that help move the story forward.`;
+}
 
 export default function EpisodeDetailsPage() {
   const params = useParams<{ id: string }>();
@@ -52,13 +69,24 @@ export default function EpisodeDetailsPage() {
     variables: { id: params.id },
   });
 
+  const [activeIndex, setActiveIndex] = useState<number | null>(null);
+
   if (loading)
-    return <p style={{ textAlign: "center", color: "#fff" }}>Loading episode...</p>;
+    return (
+      <p style={{ textAlign: "center", color: "#fff" }}>
+        Loading episode...
+      </p>
+    );
 
   if (error || !data)
-    return <p style={{ textAlign: "center", color: "red" }}>Error loading episode</p>;
+    return (
+      <p style={{ textAlign: "center", color: "red" }}>
+        Error loading episode
+      </p>
+    );
 
   const { name, episode, characters } = data.episode;
+  const activeChar = activeIndex !== null ? characters[activeIndex] : null;
 
   return (
     <main
@@ -70,8 +98,7 @@ export default function EpisodeDetailsPage() {
       }}
     >
       <div style={{ maxWidth: "1400px", margin: "0 auto" }}>
-        
-        {/* Back to Episodes */}
+        {/* Back */}
         <Link
           href="/episodes"
           style={{
@@ -80,38 +107,31 @@ export default function EpisodeDetailsPage() {
             gap: "8px",
             marginBottom: "35px",
             padding: "10px 18px",
-      
             borderRadius: "999px",
             textDecoration: "none",
             fontWeight: "700",
             color: "#ecfeff",
             background: "rgba(34,197,94,0.15)",
             border: "1px solid rgba(34,197,94,0.4)",
-            backdropFilter: "blur(10px)",
-            boxShadow: "0 0 25px rgba(34,197,94,0.35)",
-            transition: "all 0.3s ease",
           }}
         >
           <MdArrowBack size={18} />
           Back to Episodes
         </Link>
 
-        {/* Episode Header */}
+        {/* Header */}
         <div style={{ textAlign: "center", marginBottom: "60px" }}>
           <h1
             style={{
               fontSize: "46px",
               fontWeight: "900",
-              letterSpacing: "1.5px",
               color: "#ecfeff",
-              textShadow:
-                "0 0 25px rgba(34,197,94,0.8), 0 0 60px rgba(14,165,233,0.4)",
             }}
           >
             {episode}
           </h1>
 
-          <p style={{ marginTop: "10px", fontSize: "22px", color: "#99f6e4" }}>
+          <p style={{ fontSize: "22px", color: "#99f6e4" }}>
             {name}
           </p>
         </div>
@@ -124,108 +144,152 @@ export default function EpisodeDetailsPage() {
             gap: "40px",
           }}
         >
-          {characters.map((char) => (
+          {characters.map((char, index) => (
             <div
               key={char.id}
+              onClick={() => setActiveIndex(index)}
               style={{
-                position: "relative",
+                cursor: "pointer",
                 borderRadius: "22px",
                 overflow: "hidden",
-                background:
-                  "linear-gradient(180deg, rgba(255,255,255,0.14), rgba(255,255,255,0.05))",
-                backdropFilter: "blur(16px)",
                 border: "1px solid rgba(34,197,94,0.35)",
-                boxShadow: "0 25px 60px rgba(0,0,0,0.55)",
-                transition: "all 0.4s ease",
-                cursor: "pointer",
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.transform =
-                  "translateY(-14px) scale(1.04)";
-                e.currentTarget.style.boxShadow =
-                  "0 35px 90px rgba(34,197,94,0.6)";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.transform =
-                  "translateY(0) scale(1)";
-                e.currentTarget.style.boxShadow =
-                  "0 25px 60px rgba(0,0,0,0.55)";
+                boxShadow: "0 20px 50px rgba(0,0,0,0.5)",
+                transition: "transform 0.3s",
               }}
             >
-              {/* Image */}
-              <div
+              <Image
+                src={char.image}
+                alt={char.name}
+                width={300}
+                height={300}
                 style={{
-                  position: "relative",
                   width: "100%",
                   height: "260px",
-                }}
-              >
-                <Image
-                  src={char.image}
-                  alt={char.name}
-                  fill
-                  style={{ objectFit: "cover" }}
-                  sizes="(max-width: 768px) 100vw, 240px"
-                />
-              </div>
-
-              {/* Overlay */}
-              <div
-                style={{
-                  position: "absolute",
-                  inset: 0,
-                  background:
-                    "linear-gradient(to top, rgba(2,6,23,0.9), rgba(2,6,23,0.1), transparent)",
+                  objectFit: "cover",
                 }}
               />
 
-              {/* Character Info */}
               <div
                 style={{
-                  position: "absolute",
-                  bottom: 0,
-                  width: "100%",
-                  padding: "18px",
+                  padding: "14px",
                   textAlign: "center",
                   color: "#ecfeff",
                 }}
               >
-                <h3
-                  style={{
-                    margin: 0,
-                    fontSize: "20px",
-                    fontWeight: "900",
-                    textShadow:
-                      "0 0 15px rgba(34,197,94,0.7)",
-                  }}
-                >
-                  {char.name}
-                </h3>
-
-                <p style={{ margin: "6px 0", fontSize: "14px", color: "#a7f3d0" }}>
-                  {char.species} • {char.gender}
-                </p>
-
-                <p
-                  style={{
-                    margin: 0,
-                    fontSize: "14px",
-                    fontWeight: "700",
-                    color:
-                      char.status === "Alive"
-                        ? "#4ade80"
-                        : char.status === "Dead"
-                        ? "#f87171"
-                        : "#facc15",
-                  }}
-                >
-                  {char.status}
-                </p>
+                <strong>{char.name}</strong>
               </div>
             </div>
           ))}
         </div>
       </div>
+
+      {/* 🔥 CHARACTER SLIDER */}
+      {activeChar && (
+        <div
+          style={{
+            position: "fixed",
+            inset: 0,
+            background: "rgba(2,6,23,0.96)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 999,
+          }}
+        >
+          {/* Close */}
+          <button
+            onClick={() => setActiveIndex(null)}
+            style={{
+              position: "absolute",
+              top: 30,
+              right: 30,
+              background: "none",
+              border: "none",
+              color: "#fff",
+              fontSize: "32px",
+              cursor: "pointer",
+            }}
+          >
+            <MdClose />
+          </button>
+
+          {/* Prev */}
+          <button
+            onClick={() =>
+              setActiveIndex((prev) =>
+                prev! > 0 ? prev! - 1 : characters.length - 1
+              )
+            }
+            style={{
+              position: "absolute",
+              left: 20,
+              fontSize: "42px",
+              color: "#fff",
+              cursor: "pointer",
+            }}
+          >
+            <MdChevronLeft />
+          </button>
+
+          {/* Content */}
+          <div
+            style={{
+              maxWidth: "420px",
+              textAlign: "center",
+              color: "#ecfeff",
+            }}
+          >
+            <Image
+              src={activeChar.image}
+              alt={activeChar.name}
+              width={400}
+              height={400}
+              style={{ borderRadius: "22px" }}
+            />
+
+            <h2 style={{ marginTop: "20px" }}>
+              {activeChar.name}
+            </h2>
+
+            <p style={{ color: "#a7f3d0" }}>
+              {activeChar.species} • {activeChar.gender}
+            </p>
+
+            <p style={{ fontWeight: "700" }}>
+              Status: {activeChar.status}
+            </p>
+
+            {/* Understandable Role Summary */}
+            <p
+              style={{
+                marginTop: "22px",
+                lineHeight: 1.7,
+                color: "#e5e7eb",
+              }}
+            >
+              {getEpisodeRoleSummary(activeChar)}
+            </p>
+          </div>
+
+          {/* Next */}
+          <button
+            onClick={() =>
+              setActiveIndex((prev) =>
+                prev! < characters.length - 1 ? prev! + 1 : 0
+              )
+            }
+            style={{
+              position: "absolute",
+              right: 20,
+              fontSize: "42px",
+              color: "#fff",
+              cursor: "pointer",
+            }}
+          >
+            <MdChevronRight />
+          </button>
+        </div>
+      )}
     </main>
   );
 }

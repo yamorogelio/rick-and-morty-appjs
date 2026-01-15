@@ -5,8 +5,11 @@ import { useQuery } from "@apollo/client/react";
 import Link from "next/link";
 import Image from "next/image";
 import { MdMovie, MdSearch } from "react-icons/md";
-import { useState, useEffect, useRef } from "react";
+import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Autoplay } from "swiper/modules";
+import "swiper/css";
 
 /* GraphQL Query */
 const GET_CHARACTERS = gql`
@@ -24,7 +27,6 @@ const GET_CHARACTERS = gql`
   }
 `;
 
-/* Types */
 type Character = {
   id: string;
   name: string;
@@ -50,31 +52,11 @@ export default function HomePage() {
   const [status, setStatus] = useState("All");
   const [species, setSpecies] = useState("All");
 
-  const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [activeIndex, setActiveIndex] = useState(-1);
-
-  const dropdownRef = useRef<HTMLDivElement>(null);
-  const itemRefs = useRef<(HTMLDivElement | null)[]>([]);
-
   const { data, loading, error } = useQuery<CharactersData>(GET_CHARACTERS);
 
-  useEffect(() => {
-    const handler = (e: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
-        setDropdownOpen(false);
-        setActiveIndex(-1);
-      }
-    };
-    document.addEventListener("mousedown", handler);
-    return () => document.removeEventListener("mousedown", handler);
-  }, []);
+  if (loading)
+    return <p style={{ textAlign: "center", color: "#fff" }}>Loading...</p>;
 
-  useEffect(() => {
-    const query = search ? `?search=${encodeURIComponent(search)}` : "";
-    router.replace(`${window.location.pathname}${query}`, { scroll: false });
-  }, [search, router]);
-
-  if (loading) return <p style={{ textAlign: "center", color: "#fff" }}>Loading...</p>;
   if (error || !data)
     return <p style={{ textAlign: "center", color: "red" }}>Error loading characters</p>;
 
@@ -112,29 +94,21 @@ export default function HomePage() {
           Dive into infinite realities and iconic characters
         </p>
 
-        {/* Search + Filters + Episodes */}
+        {/* Search + Filters */}
         <div
-          ref={dropdownRef}
           style={{
             display: "flex",
             justifyContent: "space-between",
-            alignItems: "flex-start",
             marginBottom: "50px",
           }}
         >
-          {/* Search & Filters */}
           <div style={{ maxWidth: "320px", width: "100%" }}>
-            {/* Search */}
             <div style={{ position: "relative" }}>
               <input
                 type="text"
                 placeholder="Search characters..."
                 value={search}
-                onChange={(e) => {
-                  setSearch(e.target.value);
-                  setDropdownOpen(true);
-                }}
-                onFocus={() => setDropdownOpen(true)}
+                onChange={(e) => setSearch(e.target.value)}
                 style={{
                   width: "100%",
                   padding: "8px 12px 8px 36px",
@@ -156,7 +130,6 @@ export default function HomePage() {
               />
             </div>
 
-            {/* Unified Filters */}
             <div
               style={{
                 marginTop: "12px",
@@ -190,7 +163,6 @@ export default function HomePage() {
             </div>
           </div>
 
-          {/* Episodes Button */}
           <Link
             href="/episodes"
             style={{
@@ -210,7 +182,58 @@ export default function HomePage() {
           </Link>
         </div>
 
-        {/* Cards */}
+        {/* Single-character Slider (Wider, no arrows) */}
+        <div style={{ marginBottom: "50px" }}>
+          <Swiper
+            spaceBetween={30}
+            slidesPerView={1} // Only one character visible
+            autoplay={{ delay: 3000, disableOnInteraction: false }}
+            loop={true}
+            modules={[Autoplay]}
+            style={{ width: "90%", margin: "0 auto", padding: "10px 0" }} // Wider slider
+          >
+            {filteredCharacters.map((char) => (
+              <SwiperSlide key={char.id}>
+                <Link
+                  href={`/characters/${char.id}`}
+                  style={{ textDecoration: "none" }}
+                >
+                  <div
+                    style={{
+                      position: "relative",
+                      borderRadius: "24px",
+                      overflow: "hidden",
+                      boxShadow: "0 30px 80px rgba(0,0,0,0.6)",
+                      transition: "transform .3s",
+                      cursor: "pointer",
+                      width: "100%",
+                      maxWidth: "600px", // Wider card
+                      margin: "0 auto",
+                    }}
+                  >
+                    <div style={{ position: "relative", height: "350px" }}>
+                      <Image
+                        src={char.image}
+                        alt={char.name}
+                        fill
+                        style={{ objectFit: "cover", transition: "transform .4s" }}
+                      />
+                    </div>
+
+                    <div style={{ padding: "18px", textAlign: "center", color: "#ecfeff" }}>
+                      <strong>{char.name}</strong>
+                      <p style={{ fontSize: "14px", marginTop: "6px", color: "#a7f3d0" }}>
+                        {char.species} • {char.gender} • {char.status}
+                      </p>
+                    </div>
+                  </div>
+                </Link>
+              </SwiperSlide>
+            ))}
+          </Swiper>
+        </div>
+
+        {/* Cards Grid */}
         <div
           style={{
             display: "grid",
@@ -221,19 +244,61 @@ export default function HomePage() {
           {filteredCharacters.map((char) => (
             <Link key={char.id} href={`/characters/${char.id}`} style={{ textDecoration: "none" }}>
               <div
+                className="card"
                 style={{
+                  position: "relative",
                   borderRadius: "24px",
                   overflow: "hidden",
                   boxShadow: "0 30px 80px rgba(0,0,0,0.6)",
+                  transition: "transform .3s",
                 }}
               >
                 <div style={{ position: "relative", height: "300px" }}>
-                  <Image src={char.image} alt={char.name} fill style={{ objectFit: "cover" }} />
+                  <Image
+                    src={char.image}
+                    alt={char.name}
+                    fill
+                    style={{ objectFit: "cover", transition: "transform .4s" }}
+                  />
                 </div>
+
+                {/* Hover Preview */}
+                <div className="overlay">
+                  <div>
+                    <div>Gender: {char.gender}</div>
+                    <div>Species: {char.species}</div>
+                    <div>Status: {char.status}</div>
+                  </div>
+                </div>
+
                 <div style={{ padding: "18px", textAlign: "center", color: "#ecfeff" }}>
                   <strong>{char.name}</strong>
                 </div>
               </div>
+
+              <style jsx>{`
+                .card:hover {
+                  transform: translateY(-8px);
+                }
+                .card:hover img {
+                  transform: scale(1.08);
+                }
+                .overlay {
+                  position: absolute;
+                  inset: 0;
+                  background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+                  opacity: 0;
+                  transition: opacity 0.3s;
+                  display: flex;
+                  align-items: flex-end;
+                  padding: 16px;
+                  color: #ecfeff;
+                  font-size: 13px;
+                }
+                .card:hover .overlay {
+                  opacity: 1;
+                }
+              `}</style>
             </Link>
           ))}
         </div>
