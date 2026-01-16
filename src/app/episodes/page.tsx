@@ -5,6 +5,7 @@ import { useQuery } from "@apollo/client/react";
 import Link from "next/link";
 import { MdArrowBack } from "react-icons/md";
 
+/* GraphQL Query */
 const GET_EPISODES = gql`
   query GetEpisodes {
     episodes {
@@ -17,6 +18,7 @@ const GET_EPISODES = gql`
   }
 `;
 
+/* Types */
 type Episode = {
   id: string;
   name: string;
@@ -33,10 +35,18 @@ export default function EpisodesPage() {
   const { data, loading, error } = useQuery<EpisodesData>(GET_EPISODES);
 
   if (loading)
-    return <p style={{ textAlign: "center", color: "#fff" }}>Loading episodes...</p>;
+    return (
+      <p style={{ textAlign: "center", color: "#fff" }}>
+        Loading episodes...
+      </p>
+    );
 
   if (error || !data)
-    return <p style={{ textAlign: "center", color: "red" }}>Error loading episodes</p>;
+    return (
+      <p style={{ textAlign: "center", color: "red" }}>
+        Error loading episodes
+      </p>
+    );
 
   return (
     <main
@@ -48,7 +58,6 @@ export default function EpisodesPage() {
       }}
     >
       <div style={{ maxWidth: "1300px", margin: "0 auto" }}>
-        
         {/* Back to Home */}
         <Link
           href="/"

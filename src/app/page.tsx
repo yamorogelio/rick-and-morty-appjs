@@ -5,8 +5,8 @@ import { useQuery } from "@apollo/client/react";
 import Link from "next/link";
 import Image from "next/image";
 import { MdMovie, MdSearch } from "react-icons/md";
-import { useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useState, useMemo } from "react";
+import { useSearchParams } from "next/navigation";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay } from "swiper/modules";
 import "swiper/css";
@@ -27,6 +27,7 @@ const GET_CHARACTERS = gql`
   }
 `;
 
+/* Types */
 type Character = {
   id: string;
   name: string;
@@ -43,7 +44,6 @@ type CharactersData = {
 };
 
 export default function HomePage() {
-  const router = useRouter();
   const searchParams = useSearchParams();
   const initialSearch = searchParams.get("search") || "";
 
@@ -54,20 +54,28 @@ export default function HomePage() {
 
   const { data, loading, error } = useQuery<CharactersData>(GET_CHARACTERS);
 
+  const filteredCharacters = useMemo(() => {
+    if (!data) return [];
+
+    return data.characters.results.filter((char) => {
+      return (
+        char.name.toLowerCase().includes(search.toLowerCase()) &&
+        (gender === "All" || char.gender === gender) &&
+        (status === "All" || char.status === status) &&
+        (species === "All" || char.species === species)
+      );
+    });
+  }, [data, search, gender, status, species]);
+
   if (loading)
     return <p style={{ textAlign: "center", color: "#fff" }}>Loading...</p>;
 
   if (error || !data)
-    return <p style={{ textAlign: "center", color: "red" }}>Error loading characters</p>;
-
-  const filteredCharacters = data.characters.results.filter((char) => {
     return (
-      char.name.toLowerCase().includes(search.toLowerCase()) &&
-      (gender === "All" || char.gender === gender) &&
-      (status === "All" || char.status === status) &&
-      (species === "All" || char.species === species)
+      <p style={{ textAlign: "center", color: "red" }}>
+        Error loading characters
+      </p>
     );
-  });
 
   return (
     <main
@@ -90,7 +98,13 @@ export default function HomePage() {
           Rick & Morty Multiverse
         </h1>
 
-        <p style={{ textAlign: "center", marginBottom: "40px", color: "#99f6e4" }}>
+        <p
+          style={{
+            textAlign: "center",
+            marginBottom: "40px",
+            color: "#99f6e4",
+          }}
+        >
           Dive into infinite realities and iconic characters
         </p>
 
@@ -138,14 +152,15 @@ export default function HomePage() {
                 gap: "8px",
               }}
             >
-              {[{ v: gender, s: setGender, o: ["All", "Male", "Female", "unknown"] },
-                { v: status, s: setStatus, o: ["All", "Alive", "Dead", "unknown"] },
-                { v: species, s: setSpecies, o: ["All", "Human", "Alien"] }
-              ].map((f, i) => (
+              {[
+                { value: gender, set: setGender, options: ["All", "Male", "Female", "unknown"] },
+                { value: status, set: setStatus, options: ["All", "Alive", "Dead", "unknown"] },
+                { value: species, set: setSpecies, options: ["All", "Human", "Alien"] },
+              ].map((filter, index) => (
                 <select
-                  key={i}
-                  value={f.v}
-                  onChange={(e) => f.s(e.target.value)}
+                  key={index}
+                  value={filter.value}
+                  onChange={(e) => filter.set(e.target.value)}
                   style={{
                     padding: "8px",
                     borderRadius: "14px",
@@ -155,7 +170,7 @@ export default function HomePage() {
                     fontSize: "13px",
                   }}
                 >
-                  {f.o.map((opt) => (
+                  {filter.options.map((opt) => (
                     <option key={opt}>{opt}</option>
                   ))}
                 </select>
@@ -182,32 +197,27 @@ export default function HomePage() {
           </Link>
         </div>
 
-        {/* Single-character Slider (Wider, no arrows) */}
+        {/* Single-character Slider */}
         <div style={{ marginBottom: "50px" }}>
           <Swiper
             spaceBetween={30}
-            slidesPerView={1} // Only one character visible
+            slidesPerView={1}
             autoplay={{ delay: 3000, disableOnInteraction: false }}
-            loop={true}
+            loop
             modules={[Autoplay]}
-            style={{ width: "90%", margin: "0 auto", padding: "10px 0" }} // Wider slider
+            style={{ width: "90%", margin: "0 auto", padding: "10px 0" }}
           >
             {filteredCharacters.map((char) => (
               <SwiperSlide key={char.id}>
-                <Link
-                  href={`/characters/${char.id}`}
-                  style={{ textDecoration: "none" }}
-                >
+                <Link href={`/characters/${char.id}`} style={{ textDecoration: "none" }}>
                   <div
                     style={{
                       position: "relative",
                       borderRadius: "24px",
                       overflow: "hidden",
                       boxShadow: "0 30px 80px rgba(0,0,0,0.6)",
-                      transition: "transform .3s",
                       cursor: "pointer",
-                      width: "100%",
-                      maxWidth: "600px", // Wider card
+                      maxWidth: "600px",
                       margin: "0 auto",
                     }}
                   >
@@ -216,13 +226,25 @@ export default function HomePage() {
                         src={char.image}
                         alt={char.name}
                         fill
-                        style={{ objectFit: "cover", transition: "transform .4s" }}
+                        style={{ objectFit: "cover" }}
                       />
                     </div>
 
-                    <div style={{ padding: "18px", textAlign: "center", color: "#ecfeff" }}>
+                    <div
+                      style={{
+                        padding: "18px",
+                        textAlign: "center",
+                        color: "#ecfeff",
+                      }}
+                    >
                       <strong>{char.name}</strong>
-                      <p style={{ fontSize: "14px", marginTop: "6px", color: "#a7f3d0" }}>
+                      <p
+                        style={{
+                          fontSize: "14px",
+                          marginTop: "6px",
+                          color: "#a7f3d0",
+                        }}
+                      >
                         {char.species} • {char.gender} • {char.status}
                       </p>
                     </div>
@@ -242,7 +264,11 @@ export default function HomePage() {
           }}
         >
           {filteredCharacters.map((char) => (
-            <Link key={char.id} href={`/characters/${char.id}`} style={{ textDecoration: "none" }}>
+            <Link
+              key={char.id}
+              href={`/characters/${char.id}`}
+              style={{ textDecoration: "none" }}
+            >
               <div
                 className="card"
                 style={{
@@ -254,15 +280,9 @@ export default function HomePage() {
                 }}
               >
                 <div style={{ position: "relative", height: "300px" }}>
-                  <Image
-                    src={char.image}
-                    alt={char.name}
-                    fill
-                    style={{ objectFit: "cover", transition: "transform .4s" }}
-                  />
+                  <Image src={char.image} alt={char.name} fill style={{ objectFit: "cover" }} />
                 </div>
 
-                {/* Hover Preview */}
                 <div className="overlay">
                   <div>
                     <div>Gender: {char.gender}</div>

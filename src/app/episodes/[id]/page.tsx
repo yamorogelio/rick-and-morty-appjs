@@ -63,13 +63,12 @@ function getEpisodeRoleSummary(char: Character) {
 }
 
 export default function EpisodeDetailsPage() {
-  const params = useParams<{ id: string }>();
+  const { id } = useParams<{ id: string }>();
+  const [activeIndex, setActiveIndex] = useState<number | null>(null);
 
   const { data, loading, error } = useQuery<EpisodeData>(GET_EPISODE, {
-    variables: { id: params.id },
+    variables: { id },
   });
-
-  const [activeIndex, setActiveIndex] = useState<number | null>(null);
 
   if (loading)
     return (
@@ -86,7 +85,8 @@ export default function EpisodeDetailsPage() {
     );
 
   const { name, episode, characters } = data.episode;
-  const activeChar = activeIndex !== null ? characters[activeIndex] : null;
+  const activeChar =
+    activeIndex !== null ? characters[activeIndex] : null;
 
   return (
     <main

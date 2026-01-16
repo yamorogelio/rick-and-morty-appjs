@@ -5,6 +5,7 @@ import { useQuery } from "@apollo/client/react";
 import { useParams, useRouter } from "next/navigation";
 import Image from "next/image";
 
+/* GraphQL Query */
 const GET_CHARACTER = gql`
   query GetCharacter($id: ID!) {
     character(id: $id) {
@@ -23,6 +24,7 @@ const GET_CHARACTER = gql`
   }
 `;
 
+/* Types */
 type Episode = {
   id: string;
   name: string;
@@ -52,12 +54,20 @@ export default function CharacterPage() {
   });
 
   if (loading)
-    return <p style={{ textAlign: "center", color: "#fff" }}>Loading character...</p>;
+    return (
+      <p style={{ textAlign: "center", color: "#fff" }}>
+        Loading character...
+      </p>
+    );
 
   if (error || !data)
-    return <p style={{ textAlign: "center", color: "#ff6b6b" }}>Error loading character</p>;
+    return (
+      <p style={{ textAlign: "center", color: "#ff6b6b" }}>
+        Error loading character
+      </p>
+    );
 
-  const char = data.character;
+  const { character: char } = data;
 
   return (
     <main
@@ -138,6 +148,7 @@ export default function CharacterPage() {
               alt={char.name}
               width={260}
               height={260}
+              priority
               style={{
                 borderRadius: "50%",
                 objectFit: "cover",
@@ -145,7 +156,6 @@ export default function CharacterPage() {
                 boxShadow:
                   "0 0 30px rgba(34,197,94,0.6), 0 0 60px rgba(34,197,94,0.4)",
               }}
-              priority
             />
           </div>
 
@@ -163,9 +173,9 @@ export default function CharacterPage() {
               { label: "Status", value: char.status },
               { label: "Species", value: char.species },
               { label: "Gender", value: char.gender },
-            ].map((item) => (
+            ].map(({ label, value }) => (
               <div
-                key={item.label}
+                key={label}
                 style={{
                   padding: "14px 22px",
                   borderRadius: "999px",
@@ -175,7 +185,7 @@ export default function CharacterPage() {
                   boxShadow: "0 0 15px rgba(34,197,94,0.4)",
                 }}
               >
-                <strong>{item.label}:</strong> {item.value}
+                <strong>{label}:</strong> {value}
               </div>
             ))}
           </div>
@@ -213,7 +223,10 @@ export default function CharacterPage() {
                   boxShadow: "0 5px 20px rgba(0,0,0,0.4)",
                 }}
               >
-                <strong style={{ color: "#22c55e" }}>{ep.episode}</strong> — {ep.name}
+                <strong style={{ color: "#22c55e" }}>
+                  {ep.episode}
+                </strong>{" "}
+                — {ep.name}
               </li>
             ))}
           </ul>
