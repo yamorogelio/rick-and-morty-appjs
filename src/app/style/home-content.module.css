@@ -1,0 +1,158 @@
+/* Main layout */
+.main {
+  min-height: 100vh;
+  padding: 70px 20px;
+  background: radial-gradient(circle at 20% 20%, #22c55e33, transparent 40%),
+              radial-gradient(circle at 80% 0%, #0ea5e933, transparent 35%),
+              linear-gradient(180deg, #020617, #020617);
+}
+
+.container {
+  max-width: 1500px;
+  margin: 0 auto;
+}
+
+.title {
+  text-align: center;
+  font-size: 50px;
+  font-weight: 900;
+  color: #ecfeff;
+}
+
+.subtitle {
+  text-align: center;
+  margin-bottom: 40px;
+  color: #99f6e4;
+}
+
+/* Search and Filters */
+.searchFilters {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 50px;
+}
+
+.searchBox {
+  max-width: 320px;
+  width: 100%;
+}
+
+.inputWrapper {
+  position: relative;
+}
+
+.inputWrapper input {
+  width: 100%;
+  padding: 8px 12px 8px 36px;
+  border-radius: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  background-color: #1b1f2a;
+  color: #fff;
+}
+
+.inputWrapper svg {
+  position: absolute;
+  top: 50%;
+  left: 12px;
+  transform: translateY(-50%);
+  color: #fff;
+}
+
+.filtersGrid {
+  margin-top: 12px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.filtersGrid select {
+  padding: 8px;
+  border-radius: 14px;
+  background-color: #1b1f2a;
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  font-size: 13px;
+}
+
+/* Episodes button */
+.episodeLink {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 26px;
+  border-radius: 999px;
+  text-decoration: none;
+  font-weight: 800;
+  color: #022c22;
+  background: linear-gradient(135deg, #4ade80, #22c55e);
+}
+
+/* Slider */
+.swiperContainer {
+  width: 90%;
+  margin: 0 auto;
+  padding: 10px 0;
+}
+
+.characterCard {
+  position: relative;
+  border-radius: 24px;
+  overflow: hidden;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6);
+  cursor: pointer;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.characterInfo {
+  padding: 18px;
+  text-align: center;
+  color: #ecfeff;
+}
+
+.characterInfo p {
+  font-size: 14px;
+  margin-top: 6px;
+  color: #a7f3d0;
+}
+
+/* Cards grid */
+.cardsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 45px;
+  margin-top: 60px;
+}
+
+.card {
+  position: relative;
+  border-radius: 24px;
+  overflow: hidden;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6);
+  transition: transform 0.3s;
+}
+
+.card:hover {
+  transform: translateY(-8px);
+}
+
+.card:hover img {
+  transform: scale(1.08);
+}
+
+.overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+  opacity: 0;
+  transition: opacity 0.3s;
+  display: flex;
+  align-items: flex-end;
+  padding: 16px;
+  color: #ecfeff;
+  font-size: 13px;
+}
+
+.card:hover .overlay {
+  opacity: 1;
+}

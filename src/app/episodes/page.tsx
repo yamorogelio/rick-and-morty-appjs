@@ -3,7 +3,7 @@
 import { gql } from "@apollo/client";
 import { useQuery } from "@apollo/client/react";
 import Link from "next/link";
-import { MdArrowBack } from "react-icons/md";
+import styles from "../style/episodes-page.module.css";
 
 /* GraphQL Query */
 const GET_EPISODES = gql`
@@ -14,171 +14,34 @@ const GET_EPISODES = gql`
         name
         episode
       }
-    }
+    } 
   }
 `;
 
-/* Types */
-type Episode = {
-  id: string;
-  name: string;
-  episode: string;
-};
-
-type EpisodesData = {
-  episodes: {
-    results: Episode[];
-  };
-};
+type Episode = { id: string; name: string; episode: string; };
+type EpisodesData = { episodes: { results: Episode[] } };
 
 export default function EpisodesPage() {
   const { data, loading, error } = useQuery<EpisodesData>(GET_EPISODES);
 
-  if (loading)
-    return (
-      <p style={{ textAlign: "center", color: "#fff" }}>
-        Loading episodes...
-      </p>
-    );
-
-  if (error || !data)
-    return (
-      <p style={{ textAlign: "center", color: "red" }}>
-        Error loading episodes
-      </p>
-    );
+  if (loading) return <p className={styles.centerText}>Loading episodes...</p>;
+  if (error || !data) return <p className={styles.errorText}>Error loading episodes</p>;
 
   return (
-    <main
-      style={{
-        minHeight: "100vh",
-        padding: "60px 20px",
-        background:
-          "radial-gradient(circle at 20% 10%, #22c55e33, transparent 40%), radial-gradient(circle at 80% 0%, #0ea5e933, transparent 35%), linear-gradient(180deg, #020617, #020617)",
-      }}
-    >
-      <div style={{ maxWidth: "1300px", margin: "0 auto" }}>
-        {/* Back to Home */}
-        <Link
-          href="/"
-          style={{
-            display: "inline-flex",
-            alignItems: "center",
-            gap: "8px",
-            marginBottom: "30px",
-            padding: "10px 18px",
-            borderRadius: "999px",
-            textDecoration: "none",
-            fontWeight: "700",
-            color: "#ecfeff",
-            background: "rgba(34,197,94,0.15)",
-            border: "1px solid rgba(34,197,94,0.4)",
-            backdropFilter: "blur(10px)",
-            boxShadow: "0 0 25px rgba(34,197,94,0.35)",
-            transition: "all 0.3s ease",
-          }}
-        >
-          <MdArrowBack size={18} />
-          Back to Home
+    <main className={styles.main}>
+      <div className={styles.container}>
+        <h1 className={styles.title}>Rick & Morty Episodes</h1>
+
+        {/* Back Button */}
+        <Link href="/" className={styles.backButton}>
+          ← Back to Home
         </Link>
 
-        {/* Title */}
-        <h1
-          style={{
-            textAlign: "center",
-            marginBottom: "60px",
-            fontSize: "44px",
-            fontWeight: "900",
-            letterSpacing: "1.5px",
-            color: "#ecfeff",
-            textShadow:
-              "0 0 25px rgba(34,197,94,0.8), 0 0 60px rgba(14,165,233,0.4)",
-          }}
-        >
-          Rick and Morty Episodes
-        </h1>
-
-        {/* Episodes Grid */}
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))",
-            gap: "35px",
-          }}
-        >
-          {data.episodes.results.map((ep, index) => (
-            <Link
-              key={ep.id}
-              href={`/episodes/${ep.id}`}
-              style={{ textDecoration: "none" }}
-            >
-              <div
-                style={{
-                  position: "relative",
-                  padding: "24px",
-                  borderRadius: "20px",
-                  background:
-                    "linear-gradient(180deg, rgba(255,255,255,0.14), rgba(255,255,255,0.05))",
-                  backdropFilter: "blur(16px)",
-                  border: "1px solid rgba(34,197,94,0.35)",
-                  boxShadow: "0 25px 60px rgba(0,0,0,0.55)",
-                  transition: "all 0.4s ease",
-                  transform: `translateY(${index % 2 === 0 ? "0px" : "10px"})`,
-                  cursor: "pointer",
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.transform =
-                    "translateY(-14px) scale(1.04)";
-                  e.currentTarget.style.boxShadow =
-                    "0 35px 90px rgba(34,197,94,0.6)";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.transform =
-                    `translateY(${index % 2 === 0 ? "0px" : "10px"}) scale(1)`;
-                  e.currentTarget.style.boxShadow =
-                    "0 25px 60px rgba(0,0,0,0.55)";
-                }}
-              >
-                {/* Episode Code */}
-                <div
-                  style={{
-                    fontSize: "14px",
-                    fontWeight: "800",
-                    marginBottom: "12px",
-                    color: "#86efac",
-                    letterSpacing: "1px",
-                  }}
-                >
-                  {ep.episode}
-                </div>
-
-                {/* Episode Name */}
-                <h3
-                  style={{
-                    margin: 0,
-                    fontSize: "20px",
-                    fontWeight: "900",
-                    color: "#ecfeff",
-                    textShadow: "0 0 12px rgba(34,197,94,0.5)",
-                  }}
-                >
-                  {ep.name}
-                </h3>
-
-                {/* Glow Line */}
-                <div
-                  style={{
-                    position: "absolute",
-                    bottom: 0,
-                    left: 0,
-                    width: "100%",
-                    height: "3px",
-                    background:
-                      "linear-gradient(90deg, transparent, #22c55e, transparent)",
-                    opacity: 0.6,
-                  }}
-                />
-              </div>
+        <div className={styles.episodesGrid}>
+          {data.episodes.results.map((ep) => (
+            <Link key={ep.id} href={`/episodes/${ep.id}`} className={styles.episodeCard}>
+              <div className={styles.episodeCode}>{ep.episode}</div>
+              <div className={styles.episodeName}>{ep.name}</div>
             </Link>
           ))}
         </div>

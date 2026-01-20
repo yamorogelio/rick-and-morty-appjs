@@ -1,0 +1,112 @@
+.main {
+  min-height: 100vh;
+  padding: 60px 20px;
+  background: radial-gradient(circle at 20% 10%, #0f172a, transparent 40%),
+              radial-gradient(circle at 80% 0%, #1e3a8a, transparent 35%),
+              linear-gradient(180deg, #0f172a, #0f172a);
+  display: flex;
+  justify-content: center;
+}
+
+.container {
+  display: flex;
+  gap: 40px;
+  max-width: 1000px;
+  width: 100%;
+}
+
+/* Left Profile */
+.profileCard {
+  flex: 0 0 320px;
+  position: sticky;
+  top: 20px;
+  align-self: flex-start;
+  background: #1e293b;
+  border-radius: 28px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.7);
+  padding: 40px;
+  color: #f8fafc;
+}
+
+.backButton {
+  padding: 8px 16px;
+  margin-bottom: 20px;
+  border-radius: 12px;
+  background: #22c55e;
+  color: #1e293b;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+}
+
+.name {
+  text-align: center;
+  font-size: 44px;
+  font-weight: 900;
+  margin-bottom: 30px;
+  letter-spacing: 1.5px;
+  color: #fef08a;
+  text-shadow: 0 0 15px rgba(254, 208, 8,0.6), 0 0 30px rgba(34,197,94,0.4);
+}
+
+.profileImage {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 30px;
+}
+
+.profileImage img {
+  border-radius: 50%;
+  object-fit: cover;
+  border: 6px solid #22c55e;
+  box-shadow: 0 0 30px rgba(34,197,94,0.6), 0 0 60px rgba(34,197,94,0.4);
+}
+
+.badges {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin-bottom: 40px;
+}
+
+.badge {
+  padding: 14px 22px;
+  border-radius: 999px;
+  font-weight: 700;
+  background: #334155;
+  color: #fef08a;
+  box-shadow: 0 0 15px rgba(34,197,94,0.4);
+}
+
+/* Right Episodes */
+.episodes {
+  flex: 1;
+  max-height: 85vh;
+  overflow-y: auto;
+}
+
+.episodes h3 {
+  font-size: 26px;
+  margin-bottom: 20px;
+  text-align: center;
+  color: #fef08a;
+}
+
+.episodes ul {
+  list-style: none;
+  padding: 0;
+}
+
+.episodes li {
+  margin-bottom: 14px;
+  padding: 16px 20px;
+  border-radius: 16px;
+  background: #1e293b;
+  color: #f8fafc;
+  box-shadow: 0 5px 20px rgba(0,0,0,0.4);
+}
+
+.episodes li strong {
+  color: #22c55e;
+}

@@ -1,0 +1,140 @@
+.main {
+  min-height: 100vh;
+  padding: 60px 20px;
+  background: radial-gradient(circle at 20% 10%, #22c55e33, transparent 40%),
+              radial-gradient(circle at 80% 0%, #0ea5e933, transparent 35%),
+              linear-gradient(180deg, #020617, #020617);
+  color: #ecfeff;
+}
+
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.centerText {
+  text-align: center;
+  color: #fff;
+}
+
+.errorText {
+  text-align: center;
+  color: red;
+}
+
+.backButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 35px;
+  padding: 10px 18px;
+  border-radius: 999px;
+  text-decoration: none;
+  font-weight: 700;
+  color: #ecfeff;
+  background: rgba(34,197,94,0.15);
+  border: 1px solid rgba(34,197,94,0.4);
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 60px;
+}
+
+.header h1 {
+  font-size: 46px;
+  font-weight: 900;
+}
+
+.header p {
+  font-size: 22px;
+  color: #99f6e4;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 40px;
+}
+
+.card {
+  cursor: pointer;
+  border-radius: 22px;
+  overflow: hidden;
+  border: 1px solid rgba(34,197,94,0.35);
+  box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+  transition: transform 0.3s;
+}
+
+.card:hover {
+  transform: translateY(-6px);
+}
+
+.image {
+  width: 100%;
+  height: 260px;
+  object-fit: cover;
+}
+
+.cardName {
+  padding: 14px;
+  text-align: center;
+}
+
+.slider {
+  position: fixed;
+  inset: 0;
+  background: rgba(2,6,23,0.96);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+
+.close {
+  position: absolute;
+  top: 30px;
+  right: 30px;
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 32px;
+  cursor: pointer;
+}
+
+.prev, .next {
+  position: absolute;
+  font-size: 42px;
+  color: #fff;
+  cursor: pointer;
+}
+
+.prev { left: 20px; }
+.next { right: 20px; }
+
+.sliderContent {
+  max-width: 420px;
+  text-align: center;
+}
+
+.sliderImage {
+  border-radius: 22px;
+}
+
+.sliderContent h2 {
+  margin-top: 20px;
+}
+
+.species {
+  color: #a7f3d0;
+}
+
+.status {
+  font-weight: 700;
+}
+
+.roleSummary {
+  margin-top: 22px;
+  line-height: 1.7;
+  color: #e5e7eb;
+}

@@ -1,0 +1,71 @@
+.main {
+  min-height: 100vh;
+  padding: 70px 20px;
+  background: radial-gradient(circle at 20% 10%, #0f172a, transparent 40%),
+              radial-gradient(circle at 80% 0%, #1e3a8a, transparent 35%),
+              linear-gradient(180deg, #0f172a, #0f172a);
+  color: #fff;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.title {
+  text-align: center;
+  font-size: 48px;
+  font-weight: 900;
+  margin-bottom: 20px;
+}
+
+.centerText {
+  text-align: center;
+  color: #fff;
+}
+
+.errorText {
+  text-align: center;
+  color: #ff6b6b;
+}
+
+.backButton {
+  display: inline-block;
+  margin-bottom: 30px;
+  padding: 10px 18px;
+  border-radius: 12px;
+  background-color: #22c55e;
+  color: #1e293b;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.episodesGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 20px;
+}
+
+.episodeCard {
+  padding: 16px 20px;
+  border-radius: 16px;
+  background: #1e293b;
+  color: #f8fafc;
+  box-shadow: 0 5px 20px rgba(0,0,0,0.4);
+  text-decoration: none;
+  transition: transform 0.3s;
+}
+
+.episodeCard:hover {
+  transform: translateY(-6px);
+}
+
+.episodeCode {
+  font-weight: 700;
+  color: #22c55e;
+}
+
+.episodeName {
+  margin-top: 8px;
+  font-size: 16px;
+}
