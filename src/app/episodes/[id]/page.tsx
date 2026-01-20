@@ -6,7 +6,7 @@ import { useParams } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { MdArrowBack, MdClose, MdChevronLeft, MdChevronRight } from "react-icons/md";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import styles from "../../style/episode-details.module.css";
 
 /* GraphQL Query */
@@ -58,15 +58,39 @@ function getEpisodeRoleSummary(char: Character) {
 
 export default function EpisodeDetailsPage() {
   const { id } = useParams<{ id: string }>();
+
+  /* Slider */
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
 
-  const { data, loading, error } = useQuery<EpisodeData>(GET_EPISODE, { variables: { id } });
+  /* Pagination */
+  const [page, setPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(12);
 
+  const { data, loading, error } = useQuery<EpisodeData>(GET_EPISODE, {
+    variables: { id },
+  });
+
+  /* Always define characters (important for hooks order) */
+  const characters = data?.episode.characters || [];
+
+  /* Total Pages */
+  const totalPages = Math.ceil(characters.length / itemsPerPage);
+
+  /* Paginated Characters (HOOK SAFE) */
+  const paginatedCharacters = useMemo(() => {
+    const start = (page - 1) * itemsPerPage;
+    const end = start + itemsPerPage;
+    return characters.slice(start, end);
+  }, [characters, page, itemsPerPage]);
+
+  const activeChar =
+    activeIndex !== null ? paginatedCharacters[activeIndex] : null;
+
+  /* Loading / Error AFTER hooks */
   if (loading) return <p className={styles.centerText}>Loading episode...</p>;
   if (error || !data) return <p className={styles.errorText}>Error loading episode</p>;
 
-  const { name, episode, characters } = data.episode;
-  const activeChar = activeIndex !== null ? characters[activeIndex] : null;
+  const { name, episode } = data.episode;
 
   return (
     <main className={styles.main}>
@@ -82,39 +106,120 @@ export default function EpisodeDetailsPage() {
           <p>{name}</p>
         </div>
 
-        {/* Characters Grid */}
-        <div className={styles.grid}>
-          {characters.map((char, index) => (
-            <div key={char.id} onClick={() => setActiveIndex(index)} className={styles.card}>
-              <Image src={char.image} alt={char.name} width={300} height={300} className={styles.image} />
-              <div className={styles.cardName}><strong>{char.name}</strong></div>
+        {/* Controls */}
+        <div className={styles.controls}>
+          <label>
+            Show per page:
+            <select
+              value={itemsPerPage}
+              onChange={(e) => {
+                setItemsPerPage(Number(e.target.value));
+                setPage(1);
+              }}
+            >
+              <option value={1}>1</option>
+              <option value={6}>6</option>
+              <option value={12}>12</option>
+              <option value={24}>24</option>
+            </select>
+          </label>
+        </div>
+
+        {/* Characters Grid (CENTER FIXED) */}
+        <div className={styles.gridCenter}>
+          {paginatedCharacters.map((char, index) => (
+            <div
+              key={char.id}
+              onClick={() => setActiveIndex(index)}
+              className={styles.card}
+            >
+              <Image
+                src={char.image}
+                alt={char.name}
+                width={300}
+                height={300}
+                className={styles.image}
+              />
+              <div className={styles.cardName}>
+                <strong>{char.name}</strong>
+              </div>
             </div>
           ))}
         </div>
+
+        {/* Pagination */}
+        {totalPages > 1 && (
+          <div className={styles.pagination}>
+            <button disabled={page === 1} onClick={() => setPage((p) => p - 1)}>
+              Prev
+            </button>
+
+            <span>
+              Page {page} of {totalPages}
+            </span>
+
+            <button
+              disabled={page === totalPages}
+              onClick={() => setPage((p) => p + 1)}
+            >
+              Next
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Character Slider */}
       {activeChar && (
         <div className={styles.slider}>
           {/* Close */}
-          <button onClick={() => setActiveIndex(null)} className={styles.close}><MdClose /></button>
+          <button onClick={() => setActiveIndex(null)} className={styles.close}>
+            <MdClose />
+          </button>
 
           {/* Prev */}
-          <button onClick={() => setActiveIndex(prev => (prev! > 0 ? prev! - 1 : characters.length - 1))} className={styles.prev}>
+          <button
+            onClick={() =>
+              setActiveIndex((prev) =>
+                prev! > 0 ? prev! - 1 : paginatedCharacters.length - 1
+              )
+            }
+            className={styles.prev}
+          >
             <MdChevronLeft />
           </button>
 
           {/* Content */}
           <div className={styles.sliderContent}>
-            <Image src={activeChar.image} alt={activeChar.name} width={400} height={400} className={styles.sliderImage} />
+            <Image
+              src={activeChar.image}
+              alt={activeChar.name}
+              width={400}
+              height={400}
+              className={styles.sliderImage}
+            />
+
             <h2>{activeChar.name}</h2>
-            <p className={styles.species}>{activeChar.species} • {activeChar.gender}</p>
+
+            <p className={styles.species}>
+              {activeChar.species} • {activeChar.gender}
+            </p>
+
             <p className={styles.status}>Status: {activeChar.status}</p>
-            <p className={styles.roleSummary}>{getEpisodeRoleSummary(activeChar)}</p>
+
+            <p className={styles.roleSummary}>
+              {getEpisodeRoleSummary(activeChar)}
+            </p>
           </div>
 
           {/* Next */}
-          <button onClick={() => setActiveIndex(prev => (prev! < characters.length - 1 ? prev! + 1 : 0))} className={styles.next}>
+          <button
+            onClick={() =>
+              setActiveIndex((prev) =>
+                prev! < paginatedCharacters.length - 1 ? prev! + 1 : 0
+              )
+            }
+            className={styles.next}
+          >
             <MdChevronRight />
           </button>
         </div>

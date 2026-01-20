@@ -1,10 +1,10 @@
-/* Main layout */
 .main {
   min-height: 100vh;
   padding: 70px 20px;
   background: radial-gradient(circle at 20% 20%, #22c55e33, transparent 40%),
               radial-gradient(circle at 80% 0%, #0ea5e933, transparent 35%),
               linear-gradient(180deg, #020617, #020617);
+  color: #ecfeff;
 }
 
 .container {
@@ -25,7 +25,6 @@
   color: #99f6e4;
 }
 
-/* Search and Filters */
 .searchFilters {
   display: flex;
   justify-content: space-between;
@@ -45,7 +44,7 @@
   width: 100%;
   padding: 8px 12px 8px 36px;
   border-radius: 24px;
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  border: 1px solid rgba(255,255,255,0.3);
   background-color: #1b1f2a;
   color: #fff;
 }
@@ -70,11 +69,10 @@
   border-radius: 14px;
   background-color: #1b1f2a;
   color: #fff;
-  border: 1px solid rgba(255, 255, 255, 0.25);
+  border: 1px solid rgba(255,255,255,0.25);
   font-size: 13px;
 }
 
-/* Episodes button */
 .episodeLink {
   display: flex;
   align-items: center;
@@ -87,21 +85,26 @@
   background: linear-gradient(135deg, #4ade80, #22c55e);
 }
 
-/* Slider */
 .swiperContainer {
-  width: 90%;
-  margin: 0 auto;
-  padding: 10px 0;
+  width: 50%;
+  margin: 0 auto 60px auto;
+}
+
+.characterLink {
+  text-decoration: none;
 }
 
 .characterCard {
   position: relative;
   border-radius: 24px;
   overflow: hidden;
-  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6);
+  box-shadow: 0 30px 80px rgba(0,0,0,0.6);
   cursor: pointer;
-  max-width: 600px;
-  margin: 0 auto;
+  transition: transform 0.3s;
+}
+
+.characterCard:hover {
+  transform: translateY(-6px);
 }
 
 .characterInfo {
@@ -116,43 +119,20 @@
   color: #a7f3d0;
 }
 
-/* Cards grid */
-.cardsGrid {
+/* Static Cards Grid */
+.cardsGridStatic {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  gap: 45px;
+  gap: 40px;
   margin-top: 60px;
 }
 
-.card {
-  position: relative;
-  border-radius: 24px;
-  overflow: hidden;
-  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6);
-  transition: transform 0.3s;
+.centerText {
+  text-align: center;
+  color: #fff;
 }
 
-.card:hover {
-  transform: translateY(-8px);
-}
-
-.card:hover img {
-  transform: scale(1.08);
-}
-
-.overlay {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
-  opacity: 0;
-  transition: opacity 0.3s;
-  display: flex;
-  align-items: flex-end;
-  padding: 16px;
-  color: #ecfeff;
-  font-size: 13px;
-}
-
-.card:hover .overlay {
-  opacity: 1;
+.errorText {
+  text-align: center;
+  color: red;
 }

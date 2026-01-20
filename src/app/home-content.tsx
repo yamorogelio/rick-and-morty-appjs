@@ -11,7 +11,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay } from "swiper/modules";
 import "swiper/css";
 
-import styles from "./style/home-content.module.css"; // ✅ updated path
+import styles from "./style/home-content.module.css";
 
 /* GraphQL Query */
 const GET_CHARACTERS = gql`
@@ -29,7 +29,6 @@ const GET_CHARACTERS = gql`
   }
 `;
 
-/* Types */
 type Character = {
   id: string;
   name: string;
@@ -58,7 +57,6 @@ export default function HomeContent() {
 
   const filteredCharacters = useMemo(() => {
     if (!data) return [];
-
     return data.characters.results.filter((char) => {
       return (
         char.name.toLowerCase().includes(search.toLowerCase()) &&
@@ -70,14 +68,10 @@ export default function HomeContent() {
   }, [data, search, gender, status, species]);
 
   if (loading)
-    return <p style={{ textAlign: "center", color: "#fff" }}>Loading...</p>;
+    return <p className={styles.centerText}>Loading...</p>;
 
   if (error || !data)
-    return (
-      <p style={{ textAlign: "center", color: "red" }}>
-        Error loading characters
-      </p>
-    );
+    return <p className={styles.errorText}>Error loading characters</p>;
 
   return (
     <main className={styles.main}>
@@ -87,6 +81,7 @@ export default function HomeContent() {
           Dive into infinite realities and iconic characters
         </p>
 
+        {/* Search & Filters */}
         <div className={styles.searchFilters}>
           <div className={styles.searchBox}>
             <div className={styles.inputWrapper}>
@@ -124,6 +119,7 @@ export default function HomeContent() {
           </Link>
         </div>
 
+        {/* Slider Section (keep height 350px) */}
         <Swiper
           spaceBetween={30}
           slidesPerView={1}
@@ -134,7 +130,7 @@ export default function HomeContent() {
         >
           {filteredCharacters.map((char) => (
             <SwiperSlide key={char.id}>
-              <Link href={`/characters/${char.id}`} style={{ textDecoration: "none" }}>
+              <Link href={`/characters/${char.id}`} className={styles.characterLink}>
                 <div className={styles.characterCard}>
                   <div style={{ position: "relative", height: "350px" }}>
                     <Image
@@ -156,22 +152,24 @@ export default function HomeContent() {
           ))}
         </Swiper>
 
-        <div className={styles.cardsGrid}>
+        {/* Static Cards Grid (same layout & image height) */}
+        <div className={styles.cardsGridStatic}>
           {filteredCharacters.map((char) => (
-            <Link key={char.id} href={`/characters/${char.id}`} style={{ textDecoration: "none" }}>
-              <div className="card">
-                <div style={{ position: "relative", height: "300px" }}>
-                  <Image src={char.image} alt={char.name} fill style={{ objectFit: "cover" }} />
+            <Link key={char.id} href={`/characters/${char.id}`} className={styles.characterLink}>
+              <div className={styles.characterCard}>
+                <div style={{ position: "relative", height: "350px" }}>
+                  <Image
+                    src={char.image}
+                    alt={char.name}
+                    fill
+                    style={{ objectFit: "cover" }}
+                  />
                 </div>
-                <div className="overlay">
-                  <div>
-                    <div>Gender: {char.gender}</div>
-                    <div>Species: {char.species}</div>
-                    <div>Status: {char.status}</div>
-                  </div>
-                </div>
-                <div style={{ padding: "18px", textAlign: "center", color: "#ecfeff" }}>
+                <div className={styles.characterInfo}>
                   <strong>{char.name}</strong>
+                  <p>
+                    {char.species} • {char.gender} • {char.status}
+                  </p>
                 </div>
               </div>
             </Link>
