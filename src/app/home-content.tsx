@@ -15,8 +15,11 @@ import styles from "./style/home-content.module.css";
 
 /* GraphQL Query */
 const GET_CHARACTERS = gql`
-  query GetCharacters {
-    characters {
+  query GetCharacters($page: Int, $name: String) {
+    characters(page: $page, filter: { name: $name }) {
+      info {
+        pages
+      }
       results {
         id
         name
@@ -29,6 +32,7 @@ const GET_CHARACTERS = gql`
   }
 `;
 
+/* Types */
 type Character = {
   id: string;
   name: string;
@@ -40,8 +44,14 @@ type Character = {
 
 type CharactersData = {
   characters: {
+    info: { pages: number };
     results: Character[];
   };
+};
+
+type CharactersVars = {
+  page: number;
+  name?: string;
 };
 
 export default function HomeContent() {
@@ -52,11 +62,18 @@ export default function HomeContent() {
   const [gender, setGender] = useState("All");
   const [status, setStatus] = useState("All");
   const [species, setSpecies] = useState("All");
+  const [page, setPage] = useState(1);
 
-  const { data, loading, error } = useQuery<CharactersData>(GET_CHARACTERS);
+  /* Apollo useQuery with proper typing */
+  const { data, loading, error, fetchMore } = useQuery<
+    CharactersData,
+    CharactersVars
+  >(GET_CHARACTERS, {
+    variables: { page, name: search },
+  });
 
   const filteredCharacters = useMemo(() => {
-    if (!data) return [];
+    if (!data?.characters?.results) return [];
     return data.characters.results.filter((char) => {
       return (
         char.name.toLowerCase().includes(search.toLowerCase()) &&
@@ -67,11 +84,32 @@ export default function HomeContent() {
     });
   }, [data, search, gender, status, species]);
 
-  if (loading)
-    return <p className={styles.centerText}>Loading...</p>;
-
+  if (loading) return <p className={styles.centerText}>Loading...</p>;
   if (error || !data)
     return <p className={styles.errorText}>Error loading characters</p>;
+
+  /* Load More Handler */
+  const handleLoadMore = () => {
+    if (page < data.characters.info.pages) {
+      const nextPage = page + 1;
+      fetchMore({
+        variables: { page: nextPage, name: search },
+        updateQuery: (prev, { fetchMoreResult }) => {
+          if (!fetchMoreResult) return prev;
+          return {
+            characters: {
+              info: fetchMoreResult.characters.info,
+              results: [
+                ...prev.characters.results,
+                ...fetchMoreResult.characters.results,
+              ],
+            },
+          };
+        },
+      });
+      setPage(nextPage);
+    }
+  };
 
   return (
     <main className={styles.main}>
@@ -89,16 +127,31 @@ export default function HomeContent() {
                 type="text"
                 placeholder="Search characters..."
                 value={search}
-                onChange={(e) => setSearch(e.target.value)}
+                onChange={(e) => {
+                  setSearch(e.target.value);
+                  setPage(1);
+                }}
               />
               <MdSearch size={16} />
             </div>
 
             <div className={styles.filtersGrid}>
               {[
-                { value: gender, set: setGender, options: ["All", "Male", "Female", "unknown"] },
-                { value: status, set: setStatus, options: ["All", "Alive", "Dead", "unknown"] },
-                { value: species, set: setSpecies, options: ["All", "Human", "Alien"] },
+                {
+                  value: gender,
+                  set: setGender,
+                  options: ["All", "Male", "Female", "unknown"],
+                },
+                {
+                  value: status,
+                  set: setStatus,
+                  options: ["All", "Alive", "Dead", "unknown"],
+                },
+                {
+                  value: species,
+                  set: setSpecies,
+                  options: ["All", "Human", "Alien"],
+                },
               ].map((filter, index) => (
                 <select
                   key={index}
@@ -119,7 +172,7 @@ export default function HomeContent() {
           </Link>
         </div>
 
-        {/* Slider Section (keep height 350px) */}
+        {/* Slider Section */}
         <Swiper
           spaceBetween={30}
           slidesPerView={1}
@@ -128,9 +181,12 @@ export default function HomeContent() {
           modules={[Autoplay]}
           className={styles.swiperContainer}
         >
-          {filteredCharacters.map((char) => (
-            <SwiperSlide key={char.id}>
-              <Link href={`/characters/${char.id}`} className={styles.characterLink}>
+          {filteredCharacters.map((char, index) => (
+            <SwiperSlide key={`slide-${char.id}-${index}`}>
+              <Link
+                href={`/characters/${char.id}`}
+                className={styles.characterLink}
+              >
                 <div className={styles.characterCard}>
                   <div style={{ position: "relative", height: "350px" }}>
                     <Image
@@ -152,10 +208,14 @@ export default function HomeContent() {
           ))}
         </Swiper>
 
-        {/* Static Cards Grid (same layout & image height) */}
+        {/* Static Cards Grid */}
         <div className={styles.cardsGridStatic}>
-          {filteredCharacters.map((char) => (
-            <Link key={char.id} href={`/characters/${char.id}`} className={styles.characterLink}>
+          {filteredCharacters.map((char, index) => (
+            <Link
+              key={`card-${char.id}-${index}`}
+              href={`/characters/${char.id}`}
+              className={styles.characterLink}
+            >
               <div className={styles.characterCard}>
                 <div style={{ position: "relative", height: "350px" }}>
                   <Image
@@ -175,6 +235,18 @@ export default function HomeContent() {
             </Link>
           ))}
         </div>
+
+        {/* Load More Button */}
+        {page < data.characters.info.pages && (
+          <div className={styles.loadMoreWrapper}>
+            <button
+              onClick={handleLoadMore}
+              className={styles.loadMoreButton}
+            >
+              Load More
+            </button>
+          </div>
+        )}
       </div>
     </main>
   );

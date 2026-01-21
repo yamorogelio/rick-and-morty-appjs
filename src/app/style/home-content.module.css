@@ -136,3 +136,24 @@
   text-align: center;
   color: red;
 }
+
+
+.loadMoreWrapper {
+  text-align: center;
+  margin-top: 40px;
+}
+
+.loadMoreButton {
+  padding: 12px 24px;
+  border-radius: 8px;
+  border: none;
+  background: #22c55e;
+  color: #020617;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.loadMoreButton:hover {
+  background: #16a34a;
+}
