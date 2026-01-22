@@ -67,27 +67,22 @@ export default function HomeContent() {
   // 🔥 Stores ALL loaded characters
   const [allCharacters, setAllCharacters] = useState<Character[]>([]);
 
-  const { data, loading, error, fetchMore } = useQuery<
-    CharactersData,
-    CharactersVars
-  >(GET_CHARACTERS, {
-    variables: { page, name: search },
-    notifyOnNetworkStatusChange: true,
-  });
+  const { data, loading, error } = useQuery<CharactersData, CharactersVars>(
+    GET_CHARACTERS,
+    {
+      variables: { page, name: search },
+      notifyOnNetworkStatusChange: true,
+    }
+  );
 
   /* 🔥 MAIN FIX — append OR replace depending on page */
   useEffect(() => {
     if (!data?.characters?.results) return;
 
     if (page === 1) {
-      // New search / first load → replace list
       setAllCharacters(data.characters.results);
     } else {
-      // Load more → append to old list
-      setAllCharacters((prev) => [
-        ...prev,
-        ...data.characters.results,
-      ]);
+      setAllCharacters((prev) => [...prev, ...data.characters.results]);
     }
   }, [data, page]);
 
@@ -146,27 +141,11 @@ export default function HomeContent() {
 
             <div className={styles.filtersGrid}>
               {[
-                {
-                  value: gender,
-                  set: setGender,
-                  options: ["All", "Male", "Female", "unknown"],
-                },
-                {
-                  value: status,
-                  set: setStatus,
-                  options: ["All", "Alive", "Dead", "unknown"],
-                },
-                {
-                  value: species,
-                  set: setSpecies,
-                  options: ["All", "Human", "Alien"],
-                },
+                { value: gender, set: setGender, options: ["All", "Male", "Female", "unknown"] },
+                { value: status, set: setStatus, options: ["All", "Alive", "Dead", "unknown"] },
+                { value: species, set: setSpecies, options: ["All", "Human", "Alien"] },
               ].map((filter, index) => (
-                <select
-                  key={index}
-                  value={filter.value}
-                  onChange={(e) => filter.set(e.target.value)}
-                >
+                <select key={index} value={filter.value} onChange={(e) => filter.set(e.target.value)}>
                   {filter.options.map((opt) => (
                     <option key={opt}>{opt}</option>
                   ))}
@@ -193,18 +172,10 @@ export default function HomeContent() {
           >
             {filteredCharacters.map((char, index) => (
               <SwiperSlide key={`slide-${char.id}-${index}`}>
-                <Link
-                  href={`/characters/${char.id}`}
-                  className={styles.characterLink}
-                >
+                <Link href={`/characters/${char.id}`} className={styles.characterLink}>
                   <div className={styles.characterCard}>
                     <div style={{ position: "relative", height: "250px" }}>
-                      <Image
-                        src={char.image}
-                        alt={char.name}
-                        fill
-                        style={{ objectFit: "cover" }}
-                      />
+                      <Image src={char.image} alt={char.name} fill style={{ objectFit: "cover" }} />
                     </div>
                     <div className={styles.characterInfo}>
                       <strong>{char.name}</strong>
@@ -222,19 +193,10 @@ export default function HomeContent() {
         {/* Cards Grid */}
         <div className={styles.cardsGridStatic}>
           {filteredCharacters.map((char, index) => (
-            <Link
-              key={`card-${char.id}-${index}`}
-              href={`/characters/${char.id}`}
-              className={styles.characterLink}
-            >
+            <Link key={`card-${char.id}-${index}`} href={`/characters/${char.id}`} className={styles.characterLink}>
               <div className={styles.characterCard}>
                 <div style={{ position: "relative", height: "350px" }}>
-                  <Image
-                    src={char.image}
-                    alt={char.name}
-                    fill
-                    style={{ objectFit: "cover" }}
-                  />
+                  <Image src={char.image} alt={char.name} fill style={{ objectFit: "cover" }} />
                 </div>
                 <div className={styles.characterInfo}>
                   <strong>{char.name}</strong>
@@ -250,10 +212,7 @@ export default function HomeContent() {
         {/* Load More Button */}
         {data && page < data.characters.info.pages && (
           <div className={styles.loadMoreWrapper}>
-            <button
-              onClick={handleLoadMore}
-              className={styles.loadMoreButton}
-            >
+            <button onClick={handleLoadMore} className={styles.loadMoreButton}>
               Load More
             </button>
           </div>
