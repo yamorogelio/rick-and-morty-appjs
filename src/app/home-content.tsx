@@ -64,7 +64,7 @@ export default function HomeContent() {
   const [species, setSpecies] = useState("All");
   const [page, setPage] = useState(1);
 
-  // 🔥 Stores ALL loaded characters
+  // Stores ALL loaded characters
   const [allCharacters, setAllCharacters] = useState<Character[]>([]);
 
   const { data, loading, error } = useQuery<CharactersData, CharactersVars>(
@@ -75,7 +75,6 @@ export default function HomeContent() {
     }
   );
 
-  /* 🔥 MAIN FIX — append OR replace depending on page */
   useEffect(() => {
     if (!data?.characters?.results) return;
 

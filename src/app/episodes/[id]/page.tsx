@@ -117,6 +117,7 @@ export default function EpisodeDetailsPage() {
           </label>
         </div>
 
+        {/* 🔹 Fixed Grid */}
         <div className={styles.gridCenter}>
           {paginatedCharacters.map((char, index) => (
             <div
@@ -127,8 +128,8 @@ export default function EpisodeDetailsPage() {
               <Image
                 src={char.image}
                 alt={char.name}
-                width={300}
-                height={300}
+                width={360}
+                height={360}
                 className={styles.image}
               />
               <div className={styles.cardName}>
