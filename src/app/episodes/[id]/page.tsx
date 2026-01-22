@@ -70,13 +70,9 @@ export default function EpisodeDetailsPage() {
     variables: { id },
   });
 
-  /* Always define characters (important for hooks order) */
   const characters = data?.episode.characters || [];
-
-  /* Total Pages */
   const totalPages = Math.ceil(characters.length / itemsPerPage);
 
-  /* Paginated Characters (HOOK SAFE) */
   const paginatedCharacters = useMemo(() => {
     const start = (page - 1) * itemsPerPage;
     const end = start + itemsPerPage;
@@ -86,7 +82,6 @@ export default function EpisodeDetailsPage() {
   const activeChar =
     activeIndex !== null ? paginatedCharacters[activeIndex] : null;
 
-  /* Loading / Error AFTER hooks */
   if (loading) return <p className={styles.centerText}>Loading episode...</p>;
   if (error || !data) return <p className={styles.errorText}>Error loading episode</p>;
 
@@ -95,18 +90,15 @@ export default function EpisodeDetailsPage() {
   return (
     <main className={styles.main}>
       <div className={styles.container}>
-        {/* Back Button */}
         <Link href="/episodes" className={styles.backButton}>
           <MdArrowBack size={18} /> Back to Episodes
         </Link>
 
-        {/* Episode Header */}
         <div className={styles.header}>
           <h1>{episode}</h1>
           <p>{name}</p>
         </div>
 
-        {/* Controls */}
         <div className={styles.controls}>
           <label>
             Show per page:
@@ -125,7 +117,6 @@ export default function EpisodeDetailsPage() {
           </label>
         </div>
 
-        {/* Characters Grid (CENTER FIXED) */}
         <div className={styles.gridCenter}>
           {paginatedCharacters.map((char, index) => (
             <div
@@ -147,7 +138,6 @@ export default function EpisodeDetailsPage() {
           ))}
         </div>
 
-        {/* Pagination */}
         {totalPages > 1 && (
           <div className={styles.pagination}>
             <button disabled={page === 1} onClick={() => setPage((p) => p - 1)}>
@@ -168,15 +158,12 @@ export default function EpisodeDetailsPage() {
         )}
       </div>
 
-      {/* Character Slider */}
       {activeChar && (
         <div className={styles.slider}>
-          {/* Close */}
           <button onClick={() => setActiveIndex(null)} className={styles.close}>
             <MdClose />
           </button>
 
-          {/* Prev */}
           <button
             onClick={() =>
               setActiveIndex((prev) =>
@@ -188,7 +175,6 @@ export default function EpisodeDetailsPage() {
             <MdChevronLeft />
           </button>
 
-          {/* Content */}
           <div className={styles.sliderContent}>
             <Image
               src={activeChar.image}
@@ -211,7 +197,6 @@ export default function EpisodeDetailsPage() {
             </p>
           </div>
 
-          {/* Next */}
           <button
             onClick={() =>
               setActiveIndex((prev) =>

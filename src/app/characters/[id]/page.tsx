@@ -25,17 +25,19 @@ const GET_CHARACTER = gql`
   }
 `;
 
-type Episode = { id: string; name: string; episode: string; };
-type Character = {
-  id: string;
-  name: string;
-  image: string;
-  status: string;
-  species: string;
-  gender: string;
-  episode: Episode[];
+/* Types */
+type Episode = { id: string; name: string; episode: string };
+type CharacterData = {
+  character: {
+    id: string;
+    name: string;
+    image: string;
+    status: string;
+    species: string;
+    gender: string;
+    episode: Episode[];
+  };
 };
-type CharacterData = { character: Character; };
 
 export default function CharacterPage() {
   const { id } = useParams<{ id: string }>();
