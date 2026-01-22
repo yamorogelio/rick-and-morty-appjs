@@ -5,7 +5,7 @@ import { useQuery } from "@apollo/client/react";
 import Link from "next/link";
 import Image from "next/image";
 import { MdMovie, MdSearch } from "react-icons/md";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay } from "swiper/modules";
@@ -64,17 +64,41 @@ export default function HomeContent() {
   const [species, setSpecies] = useState("All");
   const [page, setPage] = useState(1);
 
-  /* Apollo useQuery with proper typing */
+  // 🔥 Stores ALL loaded characters
+  const [allCharacters, setAllCharacters] = useState<Character[]>([]);
+
   const { data, loading, error, fetchMore } = useQuery<
     CharactersData,
     CharactersVars
   >(GET_CHARACTERS, {
     variables: { page, name: search },
+    notifyOnNetworkStatusChange: true,
   });
 
+  /* 🔥 MAIN FIX — append OR replace depending on page */
+  useEffect(() => {
+    if (!data?.characters?.results) return;
+
+    if (page === 1) {
+      // New search / first load → replace list
+      setAllCharacters(data.characters.results);
+    } else {
+      // Load more → append to old list
+      setAllCharacters((prev) => [
+        ...prev,
+        ...data.characters.results,
+      ]);
+    }
+  }, [data, page]);
+
+  /* Reset when search changes */
+  useEffect(() => {
+    setPage(1);
+  }, [search]);
+
+  /* Apply Filters on combined list */
   const filteredCharacters = useMemo(() => {
-    if (!data?.characters?.results) return [];
-    return data.characters.results.filter((char) => {
+    return allCharacters.filter((char) => {
       return (
         char.name.toLowerCase().includes(search.toLowerCase()) &&
         (gender === "All" || char.gender === gender) &&
@@ -82,34 +106,22 @@ export default function HomeContent() {
         (species === "All" || char.species === species)
       );
     });
-  }, [data, search, gender, status, species]);
+  }, [allCharacters, search, gender, status, species]);
 
-  if (loading) return <p className={styles.centerText}>Loading...</p>;
-  if (error || !data)
-    return <p className={styles.errorText}>Error loading characters</p>;
-
-  /* Load More Handler */
+  /* Load More Handler — JUST CHANGE PAGE */
   const handleLoadMore = () => {
+    if (!data) return;
+
     if (page < data.characters.info.pages) {
-      const nextPage = page + 1;
-      fetchMore({
-        variables: { page: nextPage, name: search },
-        updateQuery: (prev, { fetchMoreResult }) => {
-          if (!fetchMoreResult) return prev;
-          return {
-            characters: {
-              info: fetchMoreResult.characters.info,
-              results: [
-                ...prev.characters.results,
-                ...fetchMoreResult.characters.results,
-              ],
-            },
-          };
-        },
-      });
-      setPage(nextPage);
+      setPage((prev) => prev + 1);
     }
   };
+
+  if (loading && page === 1)
+    return <p className={styles.centerText}>Loading...</p>;
+
+  if (error)
+    return <p className={styles.errorText}>Error loading characters</p>;
 
   return (
     <main className={styles.main}>
@@ -127,10 +139,7 @@ export default function HomeContent() {
                 type="text"
                 placeholder="Search characters..."
                 value={search}
-                onChange={(e) => {
-                  setSearch(e.target.value);
-                  setPage(1);
-                }}
+                onChange={(e) => setSearch(e.target.value)}
               />
               <MdSearch size={16} />
             </div>
@@ -172,43 +181,45 @@ export default function HomeContent() {
           </Link>
         </div>
 
-        {/* Slider Section */}
-        <Swiper
-          spaceBetween={30}
-          slidesPerView={1}
-          autoplay={{ delay: 3000, disableOnInteraction: false }}
-          loop
-          modules={[Autoplay]}
-          className={styles.swiperContainer}
-        >
-          {filteredCharacters.map((char, index) => (
-            <SwiperSlide key={`slide-${char.id}-${index}`}>
-              <Link
-                href={`/characters/${char.id}`}
-                className={styles.characterLink}
-              >
-                <div className={styles.characterCard}>
-                  <div style={{ position: "relative", height: "350px" }}>
-                    <Image
-                      src={char.image}
-                      alt={char.name}
-                      fill
-                      style={{ objectFit: "cover" }}
-                    />
+        {/* 🔹 SWIPER / SLIDER */}
+        {filteredCharacters.length > 0 && (
+          <Swiper
+            spaceBetween={30}
+            slidesPerView={1}
+            autoplay={{ delay: 3000, disableOnInteraction: false }}
+            loop
+            modules={[Autoplay]}
+            className={styles.swiperContainer}
+          >
+            {filteredCharacters.map((char, index) => (
+              <SwiperSlide key={`slide-${char.id}-${index}`}>
+                <Link
+                  href={`/characters/${char.id}`}
+                  className={styles.characterLink}
+                >
+                  <div className={styles.characterCard}>
+                    <div style={{ position: "relative", height: "250px" }}>
+                      <Image
+                        src={char.image}
+                        alt={char.name}
+                        fill
+                        style={{ objectFit: "cover" }}
+                      />
+                    </div>
+                    <div className={styles.characterInfo}>
+                      <strong>{char.name}</strong>
+                      <p>
+                        {char.species} • {char.gender} • {char.status}
+                      </p>
+                    </div>
                   </div>
-                  <div className={styles.characterInfo}>
-                    <strong>{char.name}</strong>
-                    <p>
-                      {char.species} • {char.gender} • {char.status}
-                    </p>
-                  </div>
-                </div>
-              </Link>
-            </SwiperSlide>
-          ))}
-        </Swiper>
+                </Link>
+              </SwiperSlide>
+            ))}
+          </Swiper>
+        )}
 
-        {/* Static Cards Grid */}
+        {/* Cards Grid */}
         <div className={styles.cardsGridStatic}>
           {filteredCharacters.map((char, index) => (
             <Link
@@ -237,7 +248,7 @@ export default function HomeContent() {
         </div>
 
         {/* Load More Button */}
-        {page < data.characters.info.pages && (
+        {data && page < data.characters.info.pages && (
           <div className={styles.loadMoreWrapper}>
             <button
               onClick={handleLoadMore}
