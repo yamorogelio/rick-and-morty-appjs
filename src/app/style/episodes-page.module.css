@@ -1,4 +1,3 @@
-/* ================= MAIN LAYOUT ================= */
 .main {
   min-height: 100vh;
   padding: 60px 20px;
@@ -42,7 +41,6 @@
   background: rgba(34,197,94,0.25);
 }
 
-/* ================= TITLE ================= */
 .title {
   text-align: center;
   font-size: 42px;
@@ -50,7 +48,6 @@
   margin-bottom: 50px;
 }
 
-/* ================= EPISODES GRID ================= */
 .episodesGrid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); 
@@ -58,11 +55,10 @@
   justify-content: center;
 }
 
-/* ================= EPISODE CARD ================= */
 .episodeCard {
   display: flex;
   flex-direction: column;
-  justify-content: flex-start; /* ensures content starts at top */
+  justify-content: flex-start; 
   gap: 10px;
   padding: 20px;
   border-radius: 22px;
@@ -73,7 +69,7 @@
   text-decoration: none;
   color: #ecfeff;
   transition: transform 0.3s;
-  overflow: hidden;  /* fixes content overflow */
+  overflow: hidden;  
   max-width: 100%;
   word-wrap: break-word; 
 }
@@ -82,7 +78,6 @@
   transform: translateY(-6px);
 }
 
-/* Episode Number */
 .episodeCode {
   font-weight: 700;
   font-size: 18px;
@@ -90,16 +85,14 @@
   overflow-wrap: break-word;
 }
 
-/* Episode Name */
 .episodeName {
   font-size: 20px;
   font-weight: 600;
-  word-break: break-word;      /* break long words */
-  overflow-wrap: break-word;   /* extra safety */
-  white-space: normal;         /* allow wrapping */
+  word-break: break-word;      
+  overflow-wrap: break-word;   
+  white-space: normal;         
 }
 
-/* ================= PAGINATION ================= */
 .pagination {
   margin-top: 50px;
   display: flex;
@@ -133,7 +126,6 @@
   font-weight: 600;
 }
 
-/* ================= RESPONSIVE FIX ================= */
 @media (max-width: 400px) {
   .episodesGrid {
     grid-template-columns: 1fr;

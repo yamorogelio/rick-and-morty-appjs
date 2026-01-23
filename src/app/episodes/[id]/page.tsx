@@ -30,39 +30,38 @@ const GET_EPISODE = gql`
 /* Types */
 type Character = {
   id: string;
-  name: string;
-  image: string;
-  species: string;
-  status: string;
-  gender: string;
+  name: string | null;
+  image: string | null;
+  species: string | null;
+  status: string | null;
+  gender: string | null;
 };
 
 type EpisodeData = {
   episode: {
-    name: string;
-    episode: string;
+    name: string | null;
+    episode: string | null;
     characters: Character[];
   };
 };
 
 /* Role Summary Generator */
 function getEpisodeRoleSummary(char: Character) {
+  const charName = char.name ?? "Unknown";
+
   if (char.status === "Alive") {
-    return `${char.name} actively participates in the events of this episode, interacting with other characters and playing a direct role in how the story develops.`;
+    return `${charName} actively participates in the events of this episode, interacting with other characters and playing a direct role in how the story develops.`;
   }
   if (char.status === "Dead") {
-    return `${char.name} appears in this episode as part of the storyline, where their background or past actions influence the situation and other characters.`;
+    return `${charName} appears in this episode as part of the storyline, where their background or past actions influence the situation and other characters.`;
   }
-  return `${char.name} has a supporting presence in this episode, contributing through brief but meaningful interactions that help move the story forward.`;
+  return `${charName} has a supporting presence in this episode, contributing through brief but meaningful interactions that help move the story forward.`;
 }
 
 export default function EpisodeDetailsPage() {
   const { id } = useParams<{ id: string }>();
 
-  /* Slider */
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
-
-  /* Pagination */
   const [page, setPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(12);
 
@@ -70,7 +69,7 @@ export default function EpisodeDetailsPage() {
     variables: { id },
   });
 
-  const characters = data?.episode.characters || [];
+  const characters = data?.episode.characters ?? [];
   const totalPages = Math.ceil(characters.length / itemsPerPage);
 
   const paginatedCharacters = useMemo(() => {
@@ -79,13 +78,13 @@ export default function EpisodeDetailsPage() {
     return characters.slice(start, end);
   }, [characters, page, itemsPerPage]);
 
-  const activeChar =
-    activeIndex !== null ? paginatedCharacters[activeIndex] : null;
+  const activeChar = activeIndex !== null ? paginatedCharacters[activeIndex] : null;
 
   if (loading) return <p className={styles.centerText}>Loading episode...</p>;
   if (error || !data) return <p className={styles.errorText}>Error loading episode</p>;
 
-  const { name, episode } = data.episode;
+  const episodeName = data.episode.episode ?? "Unknown Episode";
+  const episodeTitle = data.episode.name ?? "Unknown Title";
 
   return (
     <main className={styles.main}>
@@ -95,8 +94,8 @@ export default function EpisodeDetailsPage() {
         </Link>
 
         <div className={styles.header}>
-          <h1>{episode}</h1>
-          <p>{name}</p>
+          <h1>{episodeName}</h1>
+          <p>{episodeTitle}</p>
         </div>
 
         <div className={styles.controls}>
@@ -117,7 +116,7 @@ export default function EpisodeDetailsPage() {
           </label>
         </div>
 
-        {/* 🔹 Fixed Grid */}
+        {/*Grid */}
         <div className={styles.gridCenter}>
           {paginatedCharacters.map((char, index) => (
             <div
@@ -126,14 +125,14 @@ export default function EpisodeDetailsPage() {
               className={styles.card}
             >
               <Image
-                src={char.image}
-                alt={char.name}
+                src={char.image ?? "/placeholder.png"}
+                alt={char.name ?? "Unknown"}
                 width={360}
                 height={360}
                 className={styles.image}
               />
               <div className={styles.cardName}>
-                <strong>{char.name}</strong>
+                <strong>{char.name ?? "Unknown"}</strong>
               </div>
             </div>
           ))}
@@ -178,20 +177,22 @@ export default function EpisodeDetailsPage() {
 
           <div className={styles.sliderContent}>
             <Image
-              src={activeChar.image}
-              alt={activeChar.name}
+              src={activeChar.image ?? "/placeholder.png"}
+              alt={activeChar.name ?? "Unknown"}
               width={400}
               height={400}
               className={styles.sliderImage}
             />
 
-            <h2>{activeChar.name}</h2>
+            <h2>{activeChar.name ?? "Unknown"}</h2>
 
             <p className={styles.species}>
-              {activeChar.species} • {activeChar.gender}
+              {(activeChar.species ?? "Unknown")} • {(activeChar.gender ?? "Unknown")}
             </p>
 
-            <p className={styles.status}>Status: {activeChar.status}</p>
+            <p className={styles.status}>
+              Status: {activeChar.status ?? "Unknown"}
+            </p>
 
             <p className={styles.roleSummary}>
               {getEpisodeRoleSummary(activeChar)}

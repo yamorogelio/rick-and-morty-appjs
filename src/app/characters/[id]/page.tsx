@@ -26,15 +26,15 @@ const GET_CHARACTER = gql`
 `;
 
 /* Types */
-type Episode = { id: string; name: string; episode: string };
+type Episode = { id: string; name: string | null; episode: string | null };
 type CharacterData = {
   character: {
     id: string;
-    name: string;
-    image: string;
-    status: string;
-    species: string;
-    gender: string;
+    name: string | null;
+    image: string | null;
+    status: string | null;
+    species: string | null;
+    gender: string | null;
     episode: Episode[];
   };
 };
@@ -53,23 +53,31 @@ export default function CharacterPage() {
   if (error || !data)
     return <p style={{ textAlign: "center", color: "#ff6b6b" }}>Error loading character</p>;
 
-  const { character: char } = data;
+  const char = data.character;
 
   return (
     <main className={styles.main}>
       <div className={styles.container}>
         {/* Left Profile */}
         <div className={styles.profileCard}>
-          <button className={styles.backButton} onClick={() => router.push("/")}>← Back</button>
-          <h1 className={styles.name}>{char.name}</h1>
+          <button className={styles.backButton} onClick={() => router.push("/")}>
+            ← Back
+          </button>
+          <h1 className={styles.name}>{char.name ?? "Unknown Name"}</h1>
           <div className={styles.profileImage}>
-            <Image src={char.image} alt={char.name} width={260} height={260} priority />
+            <Image
+              src={char.image ?? "/placeholder.png"}
+              alt={char.name ?? "Unknown Character"}
+              width={260}
+              height={260}
+              priority
+            />
           </div>
           <div className={styles.badges}>
             {[
-              { label: "Status", value: char.status },
-              { label: "Species", value: char.species },
-              { label: "Gender", value: char.gender },
+              { label: "Status", value: char.status ?? "Unknown" },
+              { label: "Species", value: char.species ?? "Unknown" },
+              { label: "Gender", value: char.gender ?? "Unknown" },
             ].map(({ label, value }) => (
               <div key={label} className={styles.badge}>
                 <strong>{label}:</strong> {value}
@@ -82,9 +90,9 @@ export default function CharacterPage() {
         <div className={styles.episodes}>
           <h3>Episodes Appeared In</h3>
           <ul>
-            {char.episode.map((ep) => (
+            {(char.episode ?? []).map((ep) => (
               <li key={ep.id}>
-                <strong>{ep.episode}</strong> — {ep.name}
+                <strong>{ep.episode ?? "Unknown Episode"}</strong> — {ep.name ?? "Unknown Name"}
               </li>
             ))}
           </ul>

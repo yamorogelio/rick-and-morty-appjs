@@ -24,12 +24,12 @@ const GET_EPISODES = gql`
   }
 `;
 
-type Episode = { id: string; name: string; episode: string };
+type Episode = { id: string; name: string | null; episode: string | null };
 
 type EpisodesData = {
   episodes: {
     info: {
-      pages: number;
+      pages: number | null;
       next: number | null;
       prev: number | null;
     };
@@ -47,6 +47,11 @@ export default function EpisodesPage() {
   if (loading) return <p className={styles.centerText}>Loading episodes...</p>;
   if (error || !data) return <p className={styles.errorText}>Error loading episodes</p>;
 
+  const episodes = data.episodes.results ?? [];
+  const totalPages = data.episodes.info.pages ?? 1;
+  const prevPage = data.episodes.info.prev ?? null;
+  const nextPage = data.episodes.info.next ?? null;
+
   return (
     <main className={styles.main}>
       <div className={styles.container}>
@@ -57,31 +62,29 @@ export default function EpisodesPage() {
         </Link>
 
         <div className={styles.episodesGrid}>
-          {data.episodes.results.map((ep) => (
-            <Link key={ep.id} href={`/episodes/${ep.id}`} className={styles.episodeCard}>
-              <div className={styles.episodeCode}>{ep.episode}</div>
-              <div className={styles.episodeName}>{ep.name}</div>
+          {episodes.map((ep) => (
+            <Link
+              key={ep.id}
+              href={`/episodes/${ep.id}`}
+              className={styles.episodeCard}
+            >
+              <div className={styles.episodeCode}>{ep.episode ?? "Unknown Code"}</div>
+              <div className={styles.episodeName}>{ep.name ?? "Unknown Name"}</div>
             </Link>
           ))}
         </div>
 
         {/* Pagination */}
         <div className={styles.pagination}>
-          <button
-            disabled={!data.episodes.info.prev}
-            onClick={() => setPage((p) => p - 1)}
-          >
+          <button disabled={!prevPage} onClick={() => setPage((p) => p - 1)}>
             Prev
           </button>
 
           <span>
-            Page {page} of {data.episodes.info.pages}
+            Page {page} of {totalPages}
           </span>
 
-          <button
-            disabled={!data.episodes.info.next}
-            onClick={() => setPage((p) => p + 1)}
-          >
+          <button disabled={!nextPage} onClick={() => setPage((p) => p + 1)}>
             Next
           </button>
         </div>

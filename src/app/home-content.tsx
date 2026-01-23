@@ -35,11 +35,11 @@ const GET_CHARACTERS = gql`
 /* Types */
 type Character = {
   id: string;
-  name: string;
-  image: string;
-  gender: string;
-  status: string;
-  species: string;
+  name: string | null;
+  image: string | null;
+  gender: string | null;
+  status: string | null;
+  species: string | null;
 };
 
 type CharactersData = {
@@ -64,7 +64,6 @@ export default function HomeContent() {
   const [species, setSpecies] = useState("All");
   const [page, setPage] = useState(1);
 
-  // Stores ALL loaded characters
   const [allCharacters, setAllCharacters] = useState<Character[]>([]);
 
   const { data, loading, error } = useQuery<CharactersData, CharactersVars>(
@@ -85,24 +84,21 @@ export default function HomeContent() {
     }
   }, [data, page]);
 
-  /* Reset when search changes */
   useEffect(() => {
     setPage(1);
   }, [search]);
 
-  /* Apply Filters on combined list */
   const filteredCharacters = useMemo(() => {
     return allCharacters.filter((char) => {
       return (
-        char.name.toLowerCase().includes(search.toLowerCase()) &&
-        (gender === "All" || char.gender === gender) &&
-        (status === "All" || char.status === status) &&
-        (species === "All" || char.species === species)
+        (char.name ?? "").toLowerCase().includes(search.toLowerCase()) &&
+        (gender === "All" || (char.gender ?? "") === gender) &&
+        (status === "All" || (char.status ?? "") === status) &&
+        (species === "All" || (char.species ?? "") === species)
       );
     });
   }, [allCharacters, search, gender, status, species]);
 
-  /* Load More Handler — JUST CHANGE PAGE */
   const handleLoadMore = () => {
     if (!data) return;
 
@@ -173,19 +169,18 @@ export default function HomeContent() {
               <SwiperSlide key={`slide-${char.id}-${index}`}>
                 <Link href={`/characters/${char.id}`} className={styles.characterLink}>
                   <div className={styles.characterCard}>
-                    {/* 🔥 IMAGE WRAPPER for full face */}
                     <div style={{ position: "relative", height: "450px", width: "100%" }}>
                       <Image
-                        src={char.image}
-                        alt={char.name}
+                        src={char.image ?? "/placeholder.png"}
+                        alt={char.name ?? "Unknown"}
                         fill
                         style={{ objectFit: "contain", objectPosition: "top center" }}
                       />
                     </div>
                     <div className={styles.characterInfo}>
-                      <strong>{char.name}</strong>
+                      <strong>{char.name ?? "Unknown"}</strong>
                       <p>
-                        {char.species} • {char.gender} • {char.status}
+                        {(char.species ?? "Unknown")} • {(char.gender ?? "Unknown")} • {(char.status ?? "Unknown")}
                       </p>
                     </div>
                   </div>
@@ -202,16 +197,16 @@ export default function HomeContent() {
               <div className={styles.characterCard}>
                 <div style={{ position: "relative", height: "350px", width: "100%" }}>
                   <Image
-                    src={char.image}
-                    alt={char.name}
+                    src={char.image ?? "/placeholder.png"}
+                    alt={char.name ?? "Unknown"}
                     fill
                     style={{ objectFit: "contain", objectPosition: "top center" }}
                   />
                 </div>
                 <div className={styles.characterInfo}>
-                  <strong>{char.name}</strong>
+                  <strong>{char.name ?? "Unknown"}</strong>
                   <p>
-                    {char.species} • {char.gender} • {char.status}
+                    {(char.species ?? "Unknown")} • {(char.gender ?? "Unknown")} • {(char.status ?? "Unknown")}
                   </p>
                 </div>
               </div>

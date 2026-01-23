@@ -1,4 +1,3 @@
-/* ================= MAIN LAYOUT ================= */
 .main {
   min-height: 100vh;
   padding: 60px 20px;
@@ -42,7 +41,6 @@
   background: rgba(34,197,94,0.25);
 }
 
-/* ================= HEADER ================= */
 .header {
   text-align: center;
   margin-bottom: 60px;
@@ -58,7 +56,6 @@
   color: #99f6e4;
 }
 
-/* ================= GRID CARDS ================= */
 .gridCenter {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 360px));
@@ -73,11 +70,10 @@
   }
 }
 
-/* ================= CARD ================= */
 .card {
   cursor: pointer;
   border-radius: 22px;
-  overflow: hidden; /* fix overflow */
+  overflow: hidden; 
   border: 1px solid rgba(34,197,94,0.35);
   box-shadow: 0 20px 50px rgba(0,0,0,0.5);
   transition: transform 0.3s;
@@ -85,37 +81,34 @@
   max-width: 360px;
   display: flex;
   flex-direction: column;
-  background-color: #020617; /* ensures consistent background */
+  background-color: #020617; 
 }
 
 .card:hover {
   transform: translateY(-6px);
 }
 
-/* IMAGE WRAPPER – controls scaling and prevents overflow */
 .image {
   width: 100%;
   height: auto; 
-  object-fit: contain; /* never crop */
-  object-position: top center; /* prioritize face/head */
+  object-fit: contain;
+  object-position: top center; 
   border-radius: 22px 22px 0 0;
   background-color: #020617; 
   flex-shrink: 0;
 }
 
-/* CARD NAME / INFO */
 .cardName {
   padding: 14px;
   text-align: center;
   color: #a7f3d0;
   font-weight: 600;
-  word-wrap: break-word; /* prevents text overflow */
-  white-space: normal; /* allow wrapping */
+  word-wrap: break-word; 
+  white-space: normal; 
   overflow-wrap: break-word;
-  flex-shrink: 0; /* ensures info stays visible */
+  flex-shrink: 0; 
 }
 
-/* ================= SLIDER ================= */
 .slider {
   position: fixed;
   inset: 0;
@@ -182,7 +175,6 @@
   color: #e5e7eb;
 }
 
-/* ================= CONTROLS ================= */
 .controls {
   display: flex;
   justify-content: flex-end;
@@ -200,7 +192,6 @@
   border: 1px solid rgba(34,197,94,0.4);
 }
 
-/* ================= PAGINATION ================= */
 .pagination {
   margin-top: 50px;
   display: flex;
@@ -229,7 +220,6 @@
   font-weight: 600;
 }
 
-/* ================= RESPONSIVE ================= */
 @media (max-width: 400px) {
   .gridCenter {
     grid-template-columns: repeat(auto-fit, minmax(260px, 100%));
