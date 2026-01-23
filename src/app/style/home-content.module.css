@@ -1,4 +1,3 @@
-/* ------------------- BASE ------------------- */
 .main {
   min-height: 100vh;
   padding: 70px 20px;
@@ -26,7 +25,6 @@
   color: #99f6e4;
 }
 
-/* ------------------- SEARCH & FILTER ------------------- */
 .searchFilters {
   display: flex;
   justify-content: space-between;
@@ -80,7 +78,6 @@
   font-size: 13px;
 }
 
-/* EPISODE BUTTON – RIGHT SIDE DESKTOP */
 .episodeLink {
   display: flex;
   align-items: center;
@@ -97,7 +94,6 @@
   height: fit-content;
 }
 
-/* ------------------- SWIPER & CARDS ------------------- */
 .swiperContainer {
   width: 30%;
   margin: 0 auto 60px auto;
@@ -115,9 +111,9 @@
   flex-direction: column;
   justify-content: flex-start;
   align-items: center;
-  background-color: #020617;
+  background-color: #02112ffc;
   border-radius: 24px;
-  box-shadow: 0 30px 80px rgba(0,0,0,0.6);
+  box-shadow: 0 30px 80px rgba(2, 81, 64, 0.6);
   cursor: pointer;
   height: 100%;
   overflow: hidden;
@@ -128,15 +124,14 @@
   transform: translateY(-6px);
 }
 
-/* IMAGE WRAPPER RESPONSIVE */
 .imageWrapper {
   width: 100%;
-  aspect-ratio: 3 / 4;
+  aspect-ratio: 7 / 7;
   display: flex;
   justify-content: center;
   align-items: flex-start;
   overflow: hidden;
-  background-color: #020617;
+  background-color: #2a2e41;
   position: relative;
 }
 
@@ -155,7 +150,6 @@
   color: #a7f3d0;
 }
 
-/* GRID CARDS RESPONSIVE */
 .cardsGridStatic {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
@@ -163,7 +157,6 @@
   margin-top: 60px;
 }
 
-/* ------------------- TEXT ------------------- */
 .centerText {
   text-align: center;
   color: #fff;
@@ -194,7 +187,6 @@
   background: #16a34a;
 }
 
-/* ------------------- RESPONSIVE ------------------- */
 @media (max-width: 1024px) {
   .searchFilters {
     flex-direction: column;
@@ -205,7 +197,6 @@
     max-width: 100%;
   }
 
-  /* EPISODE BUTTON GOES BELOW FULL WIDTH */
   .episodeLink {
     width: 100%;
     margin-left: 0;
@@ -294,4 +285,4 @@
   .subtitle {
     font-size: 12px;
   }
-}
+}   
