@@ -173,8 +173,14 @@ export default function HomeContent() {
               <SwiperSlide key={`slide-${char.id}-${index}`}>
                 <Link href={`/characters/${char.id}`} className={styles.characterLink}>
                   <div className={styles.characterCard}>
-                    <div style={{ position: "relative", height: "250px" }}>
-                      <Image src={char.image} alt={char.name} fill style={{ objectFit: "cover" }} />
+                    {/* 🔥 IMAGE WRAPPER for full face */}
+                    <div style={{ position: "relative", height: "450px", width: "100%" }}>
+                      <Image
+                        src={char.image}
+                        alt={char.name}
+                        fill
+                        style={{ objectFit: "contain", objectPosition: "top center" }}
+                      />
                     </div>
                     <div className={styles.characterInfo}>
                       <strong>{char.name}</strong>
@@ -194,8 +200,13 @@ export default function HomeContent() {
           {filteredCharacters.map((char, index) => (
             <Link key={`card-${char.id}-${index}`} href={`/characters/${char.id}`} className={styles.characterLink}>
               <div className={styles.characterCard}>
-                <div style={{ position: "relative", height: "350px" }}>
-                  <Image src={char.image} alt={char.name} fill style={{ objectFit: "cover" }} />
+                <div style={{ position: "relative", height: "350px", width: "100%" }}>
+                  <Image
+                    src={char.image}
+                    alt={char.name}
+                    fill
+                    style={{ objectFit: "contain", objectPosition: "top center" }}
+                  />
                 </div>
                 <div className={styles.characterInfo}>
                   <strong>{char.name}</strong>

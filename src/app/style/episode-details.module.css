@@ -1,3 +1,4 @@
+/* ================= MAIN LAYOUT ================= */
 .main {
   min-height: 100vh;
   padding: 60px 20px;
@@ -34,8 +35,14 @@
   color: #ecfeff;
   background: rgba(34,197,94,0.15);
   border: 1px solid rgba(34,197,94,0.4);
+  transition: 0.2s;
 }
 
+.backButton:hover {
+  background: rgba(34,197,94,0.25);
+}
+
+/* ================= HEADER ================= */
 .header {
   text-align: center;
   margin-bottom: 60px;
@@ -51,10 +58,10 @@
   color: #99f6e4;
 }
 
-
+/* ================= GRID CARDS ================= */
 .gridCenter {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 360px));
+  grid-template-columns: repeat(auto-fit, minmax(280px, 360px));
   gap: 40px;
   justify-content: center; 
   overflow: visible;
@@ -66,11 +73,11 @@
   }
 }
 
-
+/* ================= CARD ================= */
 .card {
   cursor: pointer;
   border-radius: 22px;
-  overflow: visible; 
+  overflow: hidden; /* fix overflow */
   border: 1px solid rgba(34,197,94,0.35);
   box-shadow: 0 20px 50px rgba(0,0,0,0.5);
   transition: transform 0.3s;
@@ -78,28 +85,37 @@
   max-width: 360px;
   display: flex;
   flex-direction: column;
+  background-color: #020617; /* ensures consistent background */
 }
 
 .card:hover {
   transform: translateY(-6px);
 }
 
+/* IMAGE WRAPPER – controls scaling and prevents overflow */
 .image {
   width: 100%;
   height: auto; 
-  object-fit: contain; 
-  object-position: center; 
+  object-fit: contain; /* never crop */
+  object-position: top center; /* prioritize face/head */
   border-radius: 22px 22px 0 0;
   background-color: #020617; 
+  flex-shrink: 0;
 }
 
+/* CARD NAME / INFO */
 .cardName {
   padding: 14px;
   text-align: center;
-  overflow-wrap: break-word; 
+  color: #a7f3d0;
+  font-weight: 600;
+  word-wrap: break-word; /* prevents text overflow */
+  white-space: normal; /* allow wrapping */
+  overflow-wrap: break-word;
+  flex-shrink: 0; /* ensures info stays visible */
 }
 
-/* Slider */
+/* ================= SLIDER ================= */
 .slider {
   position: fixed;
   inset: 0;
@@ -143,7 +159,7 @@
   width: 100%;
   height: auto;
   object-fit: contain; 
-  object-position: center;
+  object-position: top center;
   border-radius: 22px;
   background-color: #020617;
 }
@@ -166,7 +182,7 @@
   color: #e5e7eb;
 }
 
-/* Controls (Items per page selector) */
+/* ================= CONTROLS ================= */
 .controls {
   display: flex;
   justify-content: flex-end;
@@ -184,7 +200,7 @@
   border: 1px solid rgba(34,197,94,0.4);
 }
 
-/* Pagination */
+/* ================= PAGINATION ================= */
 .pagination {
   margin-top: 50px;
   display: flex;
@@ -213,7 +229,7 @@
   font-weight: 600;
 }
 
-/* Responsive Fix */
+/* ================= RESPONSIVE ================= */
 @media (max-width: 400px) {
   .gridCenter {
     grid-template-columns: repeat(auto-fit, minmax(260px, 100%));

@@ -13,7 +13,7 @@ import styles from "../../style/episode-details.module.css";
 const GET_EPISODE = gql`
   query GetEpisode($id: ID!) {
     episode(id: $id) {
-      name
+      name 
       episode
       characters {
         id

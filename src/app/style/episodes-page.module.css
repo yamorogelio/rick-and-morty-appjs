@@ -1,3 +1,4 @@
+/* ================= MAIN LAYOUT ================= */
 .main {
   min-height: 100vh;
   padding: 60px 20px;
@@ -34,8 +35,14 @@
   color: #ecfeff;
   background: rgba(34,197,94,0.15);
   border: 1px solid rgba(34,197,94,0.4);
+  transition: 0.2s;
 }
 
+.backButton:hover {
+  background: rgba(34,197,94,0.25);
+}
+
+/* ================= TITLE ================= */
 .title {
   text-align: center;
   font-size: 42px;
@@ -43,17 +50,19 @@
   margin-bottom: 50px;
 }
 
+/* ================= EPISODES GRID ================= */
 .episodesGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); 
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); 
   gap: 30px;
   justify-content: center;
-  overflow: visible; 
 }
 
+/* ================= EPISODE CARD ================= */
 .episodeCard {
   display: flex;
   flex-direction: column;
+  justify-content: flex-start; /* ensures content starts at top */
   gap: 10px;
   padding: 20px;
   border-radius: 22px;
@@ -64,8 +73,8 @@
   text-decoration: none;
   color: #ecfeff;
   transition: transform 0.3s;
-  overflow: visible; 
-  max-width: 100%; 
+  overflow: hidden;  /* fixes content overflow */
+  max-width: 100%;
   word-wrap: break-word; 
 }
 
@@ -73,19 +82,24 @@
   transform: translateY(-6px);
 }
 
+/* Episode Number */
 .episodeCode {
   font-weight: 700;
   font-size: 18px;
   color: #a7f3d0;
+  overflow-wrap: break-word;
 }
 
+/* Episode Name */
 .episodeName {
   font-size: 20px;
   font-weight: 600;
-  overflow-wrap: break-word; 
+  word-break: break-word;      /* break long words */
+  overflow-wrap: break-word;   /* extra safety */
+  white-space: normal;         /* allow wrapping */
 }
 
-/* Pagination */
+/* ================= PAGINATION ================= */
 .pagination {
   margin-top: 50px;
   display: flex;
@@ -102,6 +116,11 @@
   color: #ecfeff;
   font-weight: 700;
   cursor: pointer;
+  transition: 0.2s;
+}
+
+.pagination button:hover:not(:disabled) {
+  background: rgba(34,197,94,0.25);
 }
 
 .pagination button:disabled {
@@ -114,7 +133,7 @@
   font-weight: 600;
 }
 
-/* Responsive Fix */
+/* ================= RESPONSIVE FIX ================= */
 @media (max-width: 400px) {
   .episodesGrid {
     grid-template-columns: 1fr;
