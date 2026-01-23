@@ -7,7 +7,7 @@ import Image from "next/image";
 import styles from "../../style/character-page.module.css";
 
 /* GraphQL Query */
-const GET_CHARACTER = gql`
+const GET_CHARACTER = gql`      
   query GetCharacter($id: ID!) {
     character(id: $id) {
       id
@@ -84,18 +84,32 @@ export default function CharacterPage() {
               </div>
             ))}
           </div>
+
+          {/* Episodes for mobile/tablet */}
+          <div className={styles.episodesMobile}>
+            <h3>Episodes Appeared In</h3>
+            <ul>
+              {(char.episode ?? []).map((ep) => (
+                <li key={ep.id}>
+                  <strong>{ep.episode ?? "Unknown Episode"}</strong> — {ep.name ?? "Unknown Name"}
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
 
-        {/* Right Episodes */}
-        <div className={styles.episodes}>
-          <h3>Episodes Appeared In</h3>
-          <ul>
-            {(char.episode ?? []).map((ep) => (
-              <li key={ep.id}>
-                <strong>{ep.episode ?? "Unknown Episode"}</strong> — {ep.name ?? "Unknown Name"}
-              </li>
-            ))}
-          </ul>
+        {/* Right Episodes for desktop */}
+        <div className={styles.episodesDesktop}>
+          <div className={styles.episodes}>
+            <h3>Episodes Appeared In</h3>
+            <ul>
+              {(char.episode ?? []).map((ep) => (
+                <li key={ep.id}>
+                  <strong>{ep.episode ?? "Unknown Episode"}</strong> — {ep.name ?? "Unknown Name"}
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
       </div>
     </main>

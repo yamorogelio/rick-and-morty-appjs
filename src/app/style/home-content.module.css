@@ -1,3 +1,4 @@
+/* ------------------- BASE ------------------- */
 .main {
   min-height: 100vh;
   padding: 70px 20px;
@@ -25,15 +26,22 @@
   color: #99f6e4;
 }
 
+/* ------------------- SEARCH & FILTER ------------------- */
 .searchFilters {
   display: flex;
   justify-content: space-between;
+  align-items: flex-start;
   margin-bottom: 50px;
+  gap: 16px;
+  flex-wrap: wrap;
 }
 
-.searchBox {
-  max-width: 320px;
+.searchWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
   width: 100%;
+  max-width: 600px;
 }
 
 .inputWrapper {
@@ -58,7 +66,6 @@
 }
 
 .filtersGrid {
-  margin-top: 12px;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 8px;
@@ -73,23 +80,28 @@
   font-size: 13px;
 }
 
+/* EPISODE BUTTON – RIGHT SIDE DESKTOP */
 .episodeLink {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 10px;
   padding: 14px 26px;
-  border-radius: 999px;
+  border-radius: 99px;
   text-decoration: none;
   font-weight: 800;
   color: #022c22;
   background: linear-gradient(135deg, #4ade80, #22c55e);
+  margin-left: auto;
+  white-space: nowrap;
+  height: fit-content;
 }
 
+/* ------------------- SWIPER & CARDS ------------------- */
 .swiperContainer {
   width: 30%;
   margin: 0 auto 60px auto;
-  height: 520px; 
-  align-items: center;
+  height: 520px;
 }
 
 .characterLink {
@@ -101,14 +113,14 @@
 .characterCard {
   display: flex;
   flex-direction: column;
-  justify-content: flex-start; 
+  justify-content: flex-start;
   align-items: center;
   background-color: #020617;
   border-radius: 24px;
   box-shadow: 0 30px 80px rgba(0,0,0,0.6);
   cursor: pointer;
-  height: 100%; 
-  overflow: hidden; 
+  height: 100%;
+  overflow: hidden;
   transition: transform 0.3s;
 }
 
@@ -116,21 +128,23 @@
   transform: translateY(-6px);
 }
 
-.characterCard .imageWrapper {
+/* IMAGE WRAPPER RESPONSIVE */
+.imageWrapper {
   width: 100%;
-  flex: 1; 
+  aspect-ratio: 3 / 4;
   display: flex;
   justify-content: center;
-  align-items: flex-start; 
-  overflow: hidden; 
+  align-items: flex-start;
+  overflow: hidden;
   background-color: #020617;
+  position: relative;
 }
 
-.characterCard .imageWrapper img {
-  width: auto;        
-  height: 100%;       
-  object-fit: contain; 
-  object-position: top center; 
+.imageWrapper img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: top center;
   display: block;
 }
 
@@ -139,15 +153,9 @@
   padding: 12px 0;
   text-align: center;
   color: #a7f3d0;
-  background-color: #020617;
-  flex-shrink: 0; 
 }
 
-.characterInfo p {
-  font-size: 14px;
-  margin: 0;
-}
-
+/* GRID CARDS RESPONSIVE */
 .cardsGridStatic {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
@@ -155,6 +163,7 @@
   margin-top: 60px;
 }
 
+/* ------------------- TEXT ------------------- */
 .centerText {
   text-align: center;
   color: #fff;
@@ -183,4 +192,106 @@
 
 .loadMoreButton:hover {
   background: #16a34a;
+}
+
+/* ------------------- RESPONSIVE ------------------- */
+@media (max-width: 1024px) {
+  .searchFilters {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .searchWrapper {
+    max-width: 100%;
+  }
+
+  /* EPISODE BUTTON GOES BELOW FULL WIDTH */
+  .episodeLink {
+    width: 100%;
+    margin-left: 0;
+    justify-content: center;
+  }
+
+  .filtersGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .swiperContainer {
+    width: 50%;
+    height: 420px;
+  }
+}
+
+@media (max-width: 768px) {
+  .filtersGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .inputWrapper input {
+    font-size: 14px;
+    padding: 6px 10px 6px 32px;
+  }
+
+  .episodeLink {
+    font-size: 14px;
+    padding: 12px 20px;
+  }
+
+  .swiperContainer {
+    width: 90%;
+    height: 360px;
+  }
+
+  .cardsGridStatic {
+    gap: 24px;
+  }
+
+  .title {
+    font-size: 40px;
+  }
+
+  .subtitle {
+    font-size: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .filtersGrid select,
+  .inputWrapper input,
+  .episodeLink {
+    font-size: 12px;
+    padding: 6px 10px;
+  }
+
+  .swiperContainer {
+    width: 100%;
+    height: 300px;
+  }
+
+  .cardsGridStatic {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .title {
+    font-size: 32px;
+  }
+
+  .subtitle {
+    font-size: 14px;
+  }
+
+  .imageWrapper {
+    aspect-ratio: 3 / 4;
+  }
+}
+
+@media (max-width: 360px) {
+  .title {
+    font-size: 28px;
+  }
+
+  .subtitle {
+    font-size: 12px;
+  }
 }

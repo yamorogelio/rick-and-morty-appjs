@@ -13,9 +13,10 @@
   gap: 40px;
   max-width: 1000px;
   width: 100%;
+  align-items: flex-start;
 }
 
-/* Left Profile */
+/* ---------------- DESKTOP PROFILE CARD ---------------- */
 .profileCard {
   flex: 0 0 320px;
   position: sticky;
@@ -49,6 +50,7 @@
   text-shadow: 0 0 15px rgba(254, 208, 8,0.6), 0 0 30px rgba(34,197,94,0.4);
 }
 
+/* IMAGE RESPONSIVE */
 .profileImage {
   display: flex;
   justify-content: center;
@@ -56,36 +58,48 @@
 }
 
 .profileImage img {
+  width: 100%;
+  max-width: 260px;
+  height: auto;
   border-radius: 50%;
   object-fit: cover;
   border: 6px solid #22c55e;
   box-shadow: 0 0 30px rgba(34,197,94,0.6), 0 0 60px rgba(34,197,94,0.4);
 }
 
+/* BADGES RESPONSIVE */
 .badges {
   display: flex;
   justify-content: center;
-  gap: 20px;
+  gap: 16px;
   flex-wrap: wrap;
   margin-bottom: 40px;
 }
 
 .badge {
-  padding: 14px 22px;
+  padding: 12px 20px;
   border-radius: 999px;
   font-weight: 700;
   background: #334155;
   color: #fef08a;
   box-shadow: 0 0 15px rgba(34,197,94,0.4);
+  white-space: nowrap;
 }
 
-/* Right Episodes */
-.episodes {
+/* ---------------- EPISODES DESKTOP RIGHT ---------------- */
+.episodesDesktop {
   flex: 1;
+  display: block;
   max-height: 85vh;
   overflow-y: auto;
 }
 
+/* EPISODES FOR MOBILE/TABLET (HIDDEN ON DESKTOP) */
+.episodesMobile {
+  display: none;
+}
+
+/* EPISODES STYLE */
 .episodes h3 {
   font-size: 26px;
   margin-bottom: 20px;
@@ -109,4 +123,92 @@
 
 .episodes li strong {
   color: #22c55e;
+}
+
+/* ---------------- TABLET ---------------- */
+@media (max-width: 1024px) {
+  .container {
+    flex-direction: column;
+  }
+
+  .profileCard {
+    width: 100%;
+    max-width: 500px;
+    margin: 0 auto;
+    position: relative;
+    top: auto;
+  }
+
+  /* Move episodes under profile */
+  .episodesMobile {
+    display: block;
+    margin-top: 30px;
+  }
+
+  .episodesDesktop {
+    display: none;
+  }
+
+  .name {
+    font-size: 36px;
+  }
+}
+
+/* ---------------- MOBILE ---------------- */
+@media (max-width: 768px) {
+  .profileCard {
+    padding: 30px 20px;
+  }
+
+  .profileImage img {
+    max-width: 220px;
+  }
+
+  .name {
+    font-size: 32px;
+  }
+
+  .badge {
+    padding: 10px 16px;
+    font-size: 14px;
+  }
+
+  .episodes h3 {
+    font-size: 22px;
+  }
+}
+
+/* ---------------- SMALL MOBILE ---------------- */
+@media (max-width: 480px) {
+  .profileCard {
+    padding: 24px 16px;
+  }
+
+  .profileImage img {
+    max-width: 180px;
+  }
+
+  .name {
+    font-size: 26px;
+  }
+
+  .badge {
+    font-size: 12px;
+    padding: 8px 12px;
+  }
+
+  .episodes li {
+    font-size: 14px;
+    padding: 12px 14px;
+  }
+}
+
+@media (max-width: 360px) {
+  .name {
+    font-size: 22px;
+  }
+
+  .profileImage img {
+    max-width: 150px;
+  }
 }

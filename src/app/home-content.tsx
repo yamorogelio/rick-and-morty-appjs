@@ -32,7 +32,6 @@ const GET_CHARACTERS = gql`
   }
 `;
 
-/* Types */
 type Character = {
   id: string;
   name: string | null;
@@ -101,10 +100,7 @@ export default function HomeContent() {
 
   const handleLoadMore = () => {
     if (!data) return;
-
-    if (page < data.characters.info.pages) {
-      setPage((prev) => prev + 1);
-    }
+    if (page < data.characters.info.pages) setPage((prev) => prev + 1);
   };
 
   if (loading && page === 1)
@@ -121,9 +117,9 @@ export default function HomeContent() {
           Dive into infinite realities and iconic characters
         </p>
 
-        {/* Search & Filters */}
+        {/* SEARCH + FILTERS + EPISODE BUTTON */}
         <div className={styles.searchFilters}>
-          <div className={styles.searchBox}>
+          <div className={styles.searchWrapper}>
             <div className={styles.inputWrapper}>
               <input
                 type="text"
@@ -135,12 +131,15 @@ export default function HomeContent() {
             </div>
 
             <div className={styles.filtersGrid}>
-              {[
-                { value: gender, set: setGender, options: ["All", "Male", "Female", "unknown"] },
+              {[{ value: gender, set: setGender, options: ["All", "Male", "Female", "unknown"] },
                 { value: status, set: setStatus, options: ["All", "Alive", "Dead", "unknown"] },
-                { value: species, set: setSpecies, options: ["All", "Human", "Alien"] },
+                { value: species, set: setSpecies, options: ["All", "Human", "Alien"] }
               ].map((filter, index) => (
-                <select key={index} value={filter.value} onChange={(e) => filter.set(e.target.value)}>
+                <select
+                  key={index}
+                  value={filter.value}
+                  onChange={(e) => filter.set(e.target.value)}
+                >
                   {filter.options.map((opt) => (
                     <option key={opt}>{opt}</option>
                   ))}
@@ -155,7 +154,7 @@ export default function HomeContent() {
           </Link>
         </div>
 
-        {/* 🔹 SWIPER / SLIDER */}
+        {/* SWIPER */}
         {filteredCharacters.length > 0 && (
           <Swiper
             spaceBetween={30}
@@ -169,18 +168,17 @@ export default function HomeContent() {
               <SwiperSlide key={`slide-${char.id}-${index}`}>
                 <Link href={`/characters/${char.id}`} className={styles.characterLink}>
                   <div className={styles.characterCard}>
-                    <div style={{ position: "relative", height: "450px", width: "100%" }}>
+                    <div className={styles.imageWrapper}>
                       <Image
                         src={char.image ?? "/placeholder.png"}
                         alt={char.name ?? "Unknown"}
                         fill
-                        style={{ objectFit: "contain", objectPosition: "top center" }}
                       />
                     </div>
                     <div className={styles.characterInfo}>
-                      <strong>{char.name ?? "Unknown"}</strong>
+                      <strong>{char.name}</strong>
                       <p>
-                        {(char.species ?? "Unknown")} • {(char.gender ?? "Unknown")} • {(char.status ?? "Unknown")}
+                        {char.species} • {char.gender} • {char.status}
                       </p>
                     </div>
                   </div>
@@ -190,23 +188,26 @@ export default function HomeContent() {
           </Swiper>
         )}
 
-        {/* Cards Grid */}
+        {/* GRID */}
         <div className={styles.cardsGridStatic}>
           {filteredCharacters.map((char, index) => (
-            <Link key={`card-${char.id}-${index}`} href={`/characters/${char.id}`} className={styles.characterLink}>
+            <Link
+              key={`card-${char.id}-${index}`}
+              href={`/characters/${char.id}`}
+              className={styles.characterLink}
+            >
               <div className={styles.characterCard}>
-                <div style={{ position: "relative", height: "350px", width: "100%" }}>
+                <div className={styles.imageWrapper}>
                   <Image
                     src={char.image ?? "/placeholder.png"}
                     alt={char.name ?? "Unknown"}
                     fill
-                    style={{ objectFit: "contain", objectPosition: "top center" }}
                   />
                 </div>
                 <div className={styles.characterInfo}>
-                  <strong>{char.name ?? "Unknown"}</strong>
+                  <strong>{char.name}</strong>
                   <p>
-                    {(char.species ?? "Unknown")} • {(char.gender ?? "Unknown")} • {(char.status ?? "Unknown")}
+                    {char.species} • {char.gender} • {char.status}
                   </p>
                 </div>
               </div>
@@ -214,7 +215,7 @@ export default function HomeContent() {
           ))}
         </div>
 
-        {/* Load More Button */}
+        {/* LOAD MORE */}
         {data && page < data.characters.info.pages && (
           <div className={styles.loadMoreWrapper}>
             <button onClick={handleLoadMore} className={styles.loadMoreButton}>
