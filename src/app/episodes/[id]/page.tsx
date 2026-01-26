@@ -2,12 +2,13 @@
 
 import { gql } from "@apollo/client";
 import { useQuery } from "@apollo/client/react";
-import { useParams } from "next/navigation";
-import Image from "next/image";
 import Link from "next/link";
+import Image from "next/image";
 import { MdArrowBack, MdClose, MdChevronLeft, MdChevronRight } from "react-icons/md";
 import { useState, useMemo } from "react";
+import { useParams } from "next/navigation";
 import styles from "../../style/episode-details.module.css";
+import LoadingSkeleton from "../../LoadingSkeleton"; 
 
 /* GraphQL Query */
 const GET_EPISODE = gql`
@@ -80,11 +81,10 @@ export default function EpisodeDetailsPage() {
 
   const activeChar = activeIndex !== null ? paginatedCharacters[activeIndex] : null;
 
-  if (loading) return <p className={styles.centerText}>Loading episode...</p>;
-  if (error || !data) return <p className={styles.errorText}>Error loading episode</p>;
+  if (error) return <p className={styles.errorText}>Error loading episode</p>;
 
-  const episodeName = data.episode.episode ?? "Unknown Episode";
-  const episodeTitle = data.episode.name ?? "Unknown Title";
+  const episodeName = data?.episode.episode ?? "Unknown Episode";
+  const episodeTitle = data?.episode.name ?? "Unknown Title";
 
   return (
     <main className={styles.main}>
@@ -116,49 +116,56 @@ export default function EpisodeDetailsPage() {
           </label>
         </div>
 
-        {/*Grid */}
-        <div className={styles.gridCenter}>
-          {paginatedCharacters.map((char, index) => (
-            <div
-              key={char.id}
-              onClick={() => setActiveIndex(index)}
-              className={styles.card}
-            >
-              <Image
-                src={char.image ?? "/placeholder.png"}
-                alt={char.name ?? "Unknown"}
-                width={360}
-                height={360}
-                className={styles.image}
-              />
-              <div className={styles.cardName}>
-                <strong>{char.name ?? "Unknown"}</strong>
-              </div>
+        {/* Show skeleton while loading */}
+        {loading ? (
+          <LoadingSkeleton items={itemsPerPage} />
+        ) : (
+          <>
+            {/* Character Grid */}
+            <div className={styles.gridCenter}>
+              {paginatedCharacters.map((char, index) => (
+                <div
+                  key={char.id}
+                  onClick={() => setActiveIndex(index)}
+                  className={styles.card}
+                >
+                  <Image
+                    src={char.image ?? "/placeholder.png"}
+                    alt={char.name ?? "Unknown"}
+                    width={360}
+                    height={360}
+                    className={styles.image}
+                  />
+                  <div className={styles.cardName}>
+                    <strong>{char.name ?? "Unknown"}</strong>
+                  </div>
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
 
-        {totalPages > 1 && (
-          <div className={styles.pagination}>
-            <button disabled={page === 1} onClick={() => setPage((p) => p - 1)}>
-              Prev
-            </button>
-
-            <span>
-              Page {page} of {totalPages}
-            </span>
-
-            <button
-              disabled={page === totalPages}
-              onClick={() => setPage((p) => p + 1)}
-            >
-              Next
-            </button>
-          </div>
+            {/* Pagination */}
+            {totalPages > 1 && (
+              <div className={styles.pagination}>
+                <button disabled={page === 1} onClick={() => setPage((p) => p - 1)}>
+                  Prev
+                </button>
+                <span>
+                  Page {page} of {totalPages}
+                </span>
+                <button
+                  disabled={page === totalPages}
+                  onClick={() => setPage((p) => p + 1)}
+                >
+                  Next
+                </button>
+              </div>
+            )}
+          </>
         )}
       </div>
 
-      {activeChar && (
+      {/* Active Character Slider */}
+      {activeChar && !loading && (
         <div className={styles.slider}>
           <button onClick={() => setActiveIndex(null)} className={styles.close}>
             <MdClose />
@@ -185,15 +192,12 @@ export default function EpisodeDetailsPage() {
             />
 
             <h2>{activeChar.name ?? "Unknown"}</h2>
-
             <p className={styles.species}>
               {(activeChar.species ?? "Unknown")} • {(activeChar.gender ?? "Unknown")}
             </p>
-
             <p className={styles.status}>
               Status: {activeChar.status ?? "Unknown"}
             </p>
-
             <p className={styles.roleSummary}>
               {getEpisodeRoleSummary(activeChar)}
             </p>

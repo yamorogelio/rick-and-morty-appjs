@@ -194,11 +194,11 @@
   }
 
   .searchWrapper {
-    max-width: 100%;
+    max-width: 96%;
   }
 
   .episodeLink {
-    width: 100%;
+    width: 96%;
     margin-left: 0;
     justify-content: center;
   }
@@ -209,7 +209,7 @@
 
   .swiperContainer {
     width: 50%;
-    height: 420px;
+    height: 600px;
   }
 }
 
@@ -273,7 +273,7 @@
   }
 
   .imageWrapper {
-    aspect-ratio: 3 / 4;
+    aspect-ratio: 4 / 4;
   }
 }
 

@@ -5,6 +5,7 @@ import { useQuery } from "@apollo/client/react";
 import Link from "next/link";
 import { useState } from "react";
 import styles from "../style/episodes-page.module.css";
+import LoadingSkeleton from "../LoadingSkeleton"; 
 
 /* GraphQL Query */
 const GET_EPISODES = gql`
@@ -44,13 +45,7 @@ export default function EpisodesPage() {
     variables: { page },
   });
 
-  if (loading) return <p className={styles.centerText}>Loading episodes...</p>;
-  if (error || !data) return <p className={styles.errorText}>Error loading episodes</p>;
-
-  const episodes = data.episodes.results ?? [];
-  const totalPages = data.episodes.info.pages ?? 1;
-  const prevPage = data.episodes.info.prev ?? null;
-  const nextPage = data.episodes.info.next ?? null;
+  if (error) return <p className={styles.errorText}>Error loading episodes</p>;
 
   return (
     <main className={styles.main}>
@@ -61,33 +56,50 @@ export default function EpisodesPage() {
           ← Back to Home
         </Link>
 
-        <div className={styles.episodesGrid}>
-          {episodes.map((ep) => (
-            <Link
-              key={ep.id}
-              href={`/episodes/${ep.id}`}
-              className={styles.episodeCard}
-            >
-              <div className={styles.episodeCode}>{ep.episode ?? "Unknown Code"}</div>
-              <div className={styles.episodeName}>{ep.name ?? "Unknown Name"}</div>
-            </Link>
-          ))}
-        </div>
+        {/* SHOW SKELETON WHEN LOADING */}
+        {loading ? (
+          <LoadingSkeleton items={6} /> 
+        ) : (
+          <>
+            <div className={styles.episodesGrid}>
+              {data?.episodes.results?.map((ep) => (
+                <Link
+                  key={ep.id}
+                  href={`/episodes/${ep.id}`}
+                  className={styles.episodeCard}
+                >
+                  <div className={styles.episodeCode}>
+                    {ep.episode ?? "Unknown Code"}
+                  </div>
+                  <div className={styles.episodeName}>
+                    {ep.name ?? "Unknown Name"}
+                  </div>
+                </Link>
+              ))}
+            </div>
 
-        {/* Pagination */}
-        <div className={styles.pagination}>
-          <button disabled={!prevPage} onClick={() => setPage((p) => p - 1)}>
-            Prev
-          </button>
+            {/* Pagination */}
+            <div className={styles.pagination}>
+              <button
+                disabled={!data?.episodes.info.prev}
+                onClick={() => setPage((p) => p - 1)}
+              >
+                Prev
+              </button>
 
-          <span>
-            Page {page} of {totalPages}
-          </span>
+              <span>
+                Page {page} of {data?.episodes.info.pages ?? 1}
+              </span>
 
-          <button disabled={!nextPage} onClick={() => setPage((p) => p + 1)}>
-            Next
-          </button>
-        </div>
+              <button
+                disabled={!data?.episodes.info.next}
+                onClick={() => setPage((p) => p + 1)}
+              >
+                Next
+              </button>
+            </div>
+          </>
+        )}
       </div>
     </main>
   );
