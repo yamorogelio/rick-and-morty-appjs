@@ -5,8 +5,8 @@ import { useQuery } from "@apollo/client/react";
 import { useParams, useRouter } from "next/navigation";
 import Image from "next/image";
 import styles from "../../style/character-page.module.css";
-import LoadingSkeleton from "../../LoadingSkeleton";
-
+import LoadingSkeleton from "../../LoadingSkeleton"; 
+    
 const GET_CHARACTER = gql`
   query GetCharacter($id: ID!) {
     character(id: $id) {
