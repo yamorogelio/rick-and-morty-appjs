@@ -4,7 +4,7 @@ import { gql } from "@apollo/client";
 import { useQuery } from "@apollo/client/react";
 import Link from "next/link";
 import Image from "next/image";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useParams } from "next/navigation";
 import { MdArrowBack } from "react-icons/md";
 import styles from "../../style/episode-details.module.css";
@@ -47,16 +47,44 @@ type EpisodeData = {
 
 export default function EpisodeDetailsPage() {
   const { id } = useParams<{ id: string }>();
-  const [itemsPerPage] = useState(12);
 
+  // Pagination state
+  const [page, setPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(12);
+
+  // Fetch episode data
   const { data, loading, error } = useQuery<EpisodeData>(GET_EPISODE, {
     variables: { id },
   });
 
+  // Loading state
   if (loading) return <LoadingSkeleton items={itemsPerPage} />;
+
+  // Error state
   if (error || !data) return <ErrorMessage message="Error loading episode" />;
 
-  const characters = data.episode.characters ?? [];
+  const allCharacters = data.episode.characters ?? [];
+  const totalPages = Math.ceil(allCharacters.length / itemsPerPage);
+
+  // Paginated characters
+  const paginatedCharacters = useMemo(() => {
+    const start = (page - 1) * itemsPerPage;
+    const end = start + itemsPerPage;
+    return allCharacters.slice(start, end);
+  }, [allCharacters, page, itemsPerPage]);
+
+  // Pagination handlers
+  const handlePrev = () => setPage((prev) => Math.max(prev - 1, 1));
+  const handleNext = () => setPage((prev) => Math.min(prev + 1, totalPages));
+
+  // Change items per page
+  const handleItemsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = parseInt(e.target.value);
+    if (!isNaN(value) && value > 0) {
+      setItemsPerPage(value);
+      setPage(1); // Reset to first page when changing items per page
+    }
+  };
 
   return (
     <main className={styles.main}>
@@ -70,8 +98,24 @@ export default function EpisodeDetailsPage() {
           <p>{data.episode.name}</p>
         </div>
 
+        {/* Items per page input */}
+        <div className={styles.itemsPerPage}>
+          <label>
+            Show{" "}
+            <input
+              type="number"
+              min={1}
+              value={itemsPerPage}
+              onChange={handleItemsChange}
+              style={{ width: "60px" }}
+            />{" "}
+            characters per page
+          </label>
+        </div>
+
+        {/* Character grid */}
         <div className={styles.gridCenter}>
-          {characters.map((char) => (
+          {paginatedCharacters.map((char) => (
             <div key={char.id} className={styles.card}>
               <Image
                 src={char.image ?? "/placeholder.png"}
@@ -82,10 +126,29 @@ export default function EpisodeDetailsPage() {
               />
               <div className={styles.cardName}>
                 <strong>{char.name ?? "Unknown"}</strong>
+                <p>
+                  {char.species ?? "Unknown"} • {char.gender ?? "Unknown"} •{" "}
+                  {char.status ?? "Unknown"}
+                </p>
               </div>
             </div>
           ))}
         </div>
+
+        {/* Pagination buttons */}
+        {allCharacters.length > itemsPerPage && (
+          <div className={styles.pagination}>
+            <button onClick={handlePrev} disabled={page === 1}>
+              Prev
+            </button>
+            <span>
+              Page {page} of {totalPages}
+            </span>
+            <button onClick={handleNext} disabled={page === totalPages}>
+              Next
+            </button>
+          </div>
+        )}
       </div>
     </main>
   );

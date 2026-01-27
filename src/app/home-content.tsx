@@ -64,12 +64,23 @@ export default function HomeContent() {
     { variables: { page, name: search }, notifyOnNetworkStatusChange: true }
   );
 
+  // Update characters safely without duplicates
   useEffect(() => {
     if (!data?.characters?.results) return;
-    if (page === 1) setAllCharacters(data.characters.results);
-    else setAllCharacters((prev) => [...prev, ...data.characters.results]);
+
+    if (page === 1) {
+      setAllCharacters(data.characters.results);
+    } else {
+      setAllCharacters((prev) => {
+        const newChars = data.characters.results.filter(
+          (c) => !prev.some((p) => p.id === c.id)
+        );
+        return [...prev, ...newChars];
+      });
+    }
   }, [data, page]);
 
+  // Reset page when search changes
   useEffect(() => { setPage(1); }, [search]);
 
   const filteredCharacters = useMemo(() => {
@@ -133,11 +144,11 @@ export default function HomeContent() {
                     <Link href={`/characters/${char.id}`} className={styles.characterLink}>
                       <div className={styles.characterCard}>
                         <div className={styles.imageWrapper}>
-                          <Image src={char.image??"/placeholder.png"} alt={char.name??"Unknown"} fill/>
+                          <Image src={char.image ?? "/placeholder.png"} alt={char.name ?? "Unknown"} fill/>
                         </div>
                         <div className={styles.characterInfo}>
-                          <strong>{char.name}</strong>
-                          <p>{char.species} • {char.gender} • {char.status}</p>
+                          <strong>{char.name ?? "Unknown"}</strong>
+                          <p>{char.species ?? "Unknown"} • {char.gender ?? "Unknown"} • {char.status ?? "Unknown"}</p>
                         </div>
                       </div>
                     </Link>
@@ -152,11 +163,11 @@ export default function HomeContent() {
                 <Link key={`card-${char.id}-${index}`} href={`/characters/${char.id}`} className={styles.characterLink}>
                   <div className={styles.characterCard}>
                     <div className={styles.imageWrapper}>
-                      <Image src={char.image??"/placeholder.png"} alt={char.name??"Unknown"} fill/>
+                      <Image src={char.image ?? "/placeholder.png"} alt={char.name ?? "Unknown"} fill/>
                     </div>
                     <div className={styles.characterInfo}>
-                      <strong>{char.name}</strong>
-                      <p>{char.species} • {char.gender} • {char.status}</p>
+                      <strong>{char.name ?? "Unknown"}</strong>
+                      <p>{char.species ?? "Unknown"} • {char.gender ?? "Unknown"} • {char.status ?? "Unknown"}</p>
                     </div>
                   </div>
                 </Link>
