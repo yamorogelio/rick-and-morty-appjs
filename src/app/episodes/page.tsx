@@ -33,10 +33,7 @@ export default function EpisodesPage() {
     variables: { page },
   });
 
-  // 🔹 Loading State
   if (loading) return <LoadingSkeleton items={6} />;
-
-  // 🔹 Error State
   if (error || !data) return <ErrorMessage message="Error loading episodes" />;
 
   return (

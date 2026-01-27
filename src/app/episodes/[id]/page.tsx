@@ -4,7 +4,7 @@ import { gql } from "@apollo/client";
 import { useQuery } from "@apollo/client/react";
 import Link from "next/link";
 import Image from "next/image";
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import { useParams } from "next/navigation";
 import { MdArrowBack } from "react-icons/md";
 import styles from "../../style/episode-details.module.css";
@@ -47,17 +47,13 @@ type EpisodeData = {
 
 export default function EpisodeDetailsPage() {
   const { id } = useParams<{ id: string }>();
-  const [page, setPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(12);
+  const [itemsPerPage] = useState(12);
 
   const { data, loading, error } = useQuery<EpisodeData>(GET_EPISODE, {
     variables: { id },
   });
 
-  // 🔹 Loading State
   if (loading) return <LoadingSkeleton items={itemsPerPage} />;
-
-  // 🔹 Error State
   if (error || !data) return <ErrorMessage message="Error loading episode" />;
 
   const characters = data.episode.characters ?? [];

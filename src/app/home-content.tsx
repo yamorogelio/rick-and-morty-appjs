@@ -12,7 +12,7 @@ import { Autoplay } from "swiper/modules";
 import "swiper/css";
 
 import styles from "./style/home-content.module.css";
-import LoadingSkeleton from "./LoadingSkeleton"; // <-- import skeleton
+import LoadingSkeleton from "./LoadingSkeleton";
 
 const GET_CHARACTERS = gql`
   query GetCharacters($page: Int, $name: String) {
@@ -30,8 +30,22 @@ const GET_CHARACTERS = gql`
   }
 `;
 
-type Character = { id: string; name: string | null; image: string | null; gender: string | null; status: string | null; species: string | null; };
-type CharactersData = { characters: { info: { pages: number }; results: Character[] } };
+type Character = {
+  id: string;
+  name: string | null;
+  image: string | null;
+  gender: string | null;
+  status: string | null;
+  species: string | null;
+};
+
+type CharactersData = {
+  characters: {
+    info: { pages: number };
+    results: Character[];
+  };
+};
+
 type CharactersVars = { page: number; name?: string };
 
 export default function HomeContent() {
@@ -108,7 +122,7 @@ export default function HomeContent() {
           </Link>
         </div>
 
-        {/* SKELETON FOR LOADING */}
+        {/* LOADING */}
         {loading && page===1 ? <LoadingSkeleton items={6} /> : (
           <>
             {/* SWIPER */}
