@@ -5,6 +5,7 @@
               radial-gradient(circle at 80% 0%, #0ea5e933, transparent 35%),
               linear-gradient(180deg, #020617, #020617);
   color: #ecfeff;
+  transition: background 0.5s ease-in-out;
 }
 
 .container {
@@ -17,12 +18,14 @@
   font-size: 50px;
   font-weight: 900;
   color: #ecfeff;
+  text-shadow: 2px 2px 10px rgba(0,255,128,0.5);
 }
 
 .subtitle {
   text-align: center;
   margin-bottom: 40px;
   color: #99f6e4;
+  text-shadow: 1px 1px 6px rgba(0,0,0,0.5);
 }
 
 .searchFilters {
@@ -53,6 +56,14 @@
   border: 1px solid rgba(255,255,255,0.3);
   background-color: #1b1f2a;
   color: #fff;
+  box-shadow: 0 4px 20px rgba(0,255,128,0.15);
+  transition: all 0.3s ease;
+}
+
+.inputWrapper input:focus {
+  outline: none;
+  border-color: #22c55e;
+  box-shadow: 0 0 10px #22c55e88;
 }
 
 .inputWrapper svg {
@@ -76,6 +87,12 @@
   color: #fff;
   border: 1px solid rgba(255,255,255,0.25);
   font-size: 13px;
+  box-shadow: 0 4px 15px rgba(0,255,128,0.15);
+  transition: all 0.3s ease;
+}
+
+.filtersGrid select:hover {
+  border-color: #22c55e;
 }
 
 .episodeLink {
@@ -92,12 +109,24 @@
   margin-left: auto;
   white-space: nowrap;
   height: fit-content;
+  transition: all 0.3s ease;
+  box-shadow: 0 6px 20px rgba(0,255,128,0.25);
+}
+
+.episodeLink:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 30px rgba(0,255,128,0.4);
 }
 
 .swiperContainer {
   width: 30%;
   margin: 0 auto 60px auto;
   height: 520px;
+  border-radius: 24px;
+  overflow: hidden;
+  backdrop-filter: blur(6px);
+  background-color: rgba(2,17,31,0.7);
+  box-shadow: 0 20px 80px rgba(0,255,128,0.3);
 }
 
 .characterLink {
@@ -111,17 +140,19 @@
   flex-direction: column;
   justify-content: flex-start;
   align-items: center;
-  background-color: #02112ffc;
+  background-color: rgba(2,17,47,0.85);
   border-radius: 24px;
   box-shadow: 0 30px 80px rgba(2, 81, 64, 0.6);
   cursor: pointer;
   height: 100%;
   overflow: hidden;
-  transition: transform 0.3s;
+  transition: transform 0.3s, box-shadow 0.3s, background 0.3s;
 }
 
 .characterCard:hover {
-  transform: translateY(-6px);
+  transform: translateY(-8px) scale(1.03);
+  box-shadow: 0 40px 120px rgba(0,255,128,0.5);
+  background-color: rgba(2,17,47,0.95);
 }
 
 .imageWrapper {
@@ -133,14 +164,7 @@
   overflow: hidden;
   background-color: #2a2e41;
   position: relative;
-}
-
-.imageWrapper img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  object-position: top center;
-  display: block;
+  border-bottom: 2px solid #22c55e44;
 }
 
 .characterInfo {
@@ -148,6 +172,7 @@
   padding: 12px 0;
   text-align: center;
   color: #a7f3d0;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.6);
 }
 
 .cardsGridStatic {
@@ -180,109 +205,53 @@
   color: #020617;
   font-weight: bold;
   cursor: pointer;
-  transition: 0.2s;
+  transition: 0.3s;
+  box-shadow: 0 4px 15px rgba(34,197,94,0.4);
 }
 
 .loadMoreButton:hover {
   background: #16a34a;
+  transform: translateY(-3px);
+  box-shadow: 0 6px 25px rgba(22,163,74,0.5);
+  animation: pulse 1.2s infinite;
 }
 
+@keyframes pulse {
+  0%,100% { box-shadow: 0 6px 25px rgba(22,163,74,0.5); }
+  50% { box-shadow: 0 10px 35px rgba(22,163,74,0.7); }
+}
+
+/* RESPONSIVE ADJUSTMENTS */
 @media (max-width: 1024px) {
-  .searchFilters {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .searchWrapper {
-    max-width: 96%;
-  }
-
-  .episodeLink {
-    width: 96%;
-    margin-left: 0;
-    justify-content: center;
-  }
-
-  .filtersGrid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .swiperContainer {
-    width: 50%;
-    height: 600px;
-  }
+  .searchFilters { flex-direction: column; align-items: stretch; }
+  .searchWrapper { max-width: 96%; }
+  .episodeLink { width: 96%; margin-left: 0; justify-content: center; }
+  .filtersGrid { grid-template-columns: repeat(2, 1fr); }
+  .swiperContainer { width: 50%; height: 600px; }
 }
 
 @media (max-width: 768px) {
-  .filtersGrid {
-    grid-template-columns: 1fr;
-  }
-
-  .inputWrapper input {
-    font-size: 14px;
-    padding: 6px 10px 6px 32px;
-  }
-
-  .episodeLink {
-    font-size: 14px;
-    padding: 12px 20px;
-  }
-
-  .swiperContainer {
-    width: 90%;
-    height: 360px;
-  }
-
-  .cardsGridStatic {
-    gap: 24px;
-  }
-
-  .title {
-    font-size: 40px;
-  }
-
-  .subtitle {
-    font-size: 16px;
-  }
+  .filtersGrid { grid-template-columns: 1fr; }
+  .inputWrapper input { font-size: 14px; padding: 6px 10px 6px 32px; }
+  .episodeLink { font-size: 14px; padding: 12px 20px; }
+  .swiperContainer { width: 90%; height: 360px; }
+  .cardsGridStatic { gap: 24px; }
+  .title { font-size: 40px; }
+  .subtitle { font-size: 16px; }
 }
 
 @media (max-width: 480px) {
   .filtersGrid select,
   .inputWrapper input,
-  .episodeLink {
-    font-size: 12px;
-    padding: 6px 10px;
-  }
-
-  .swiperContainer {
-    width: 100%;
-    height: 300px;
-  }
-
-  .cardsGridStatic {
-    grid-template-columns: 1fr;
-    gap: 16px;
-  }
-
-  .title {
-    font-size: 32px;
-  }
-
-  .subtitle {
-    font-size: 14px;
-  }
-
-  .imageWrapper {
-    aspect-ratio: 4 / 4;
-  }
+  .episodeLink { font-size: 12px; padding: 6px 10px; }
+  .swiperContainer { width: 100%; height: 300px; }
+  .cardsGridStatic { grid-template-columns: 1fr; gap: 16px; }
+  .title { font-size: 32px; }
+  .subtitle { font-size: 14px; }
+  .imageWrapper { aspect-ratio: 4 / 4; }
 }
 
 @media (max-width: 360px) {
-  .title {
-    font-size: 28px;
-  }
-
-  .subtitle {
-    font-size: 12px;
-  }
-}   
+  .title { font-size: 28px; }
+  .subtitle { font-size: 12px; }
+}

@@ -6,6 +6,7 @@
               linear-gradient(180deg, #0f172a, #0f172a);
   display: flex;
   justify-content: center;
+  font-family: 'Inter', sans-serif;
 }
 
 .container {
@@ -21,11 +22,17 @@
   position: sticky;
   top: 20px;
   align-self: flex-start;
-  background: #1e293b;
+  background: linear-gradient(145deg, #1e293b, #0f172a);
   border-radius: 28px;
-  box-shadow: 0 20px 60px rgba(0,0,0,0.7);
+  box-shadow: 0 20px 60px rgba(0,0,0,0.7), 0 0 15px rgba(34,197,94,0.25);
   padding: 40px;
   color: #f8fafc;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.profileCard:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 30px 70px rgba(0,0,0,0.8), 0 0 25px rgba(34,197,94,0.35);
 }
 
 .backButton {
@@ -37,6 +44,12 @@
   font-weight: 700;
   border: none;
   cursor: pointer;
+  transition: background 0.3s ease, transform 0.2s ease;
+}
+
+.backButton:hover {
+  background: #16a34a;
+  transform: translateY(-2px);
 }
 
 .name {
@@ -47,6 +60,7 @@
   letter-spacing: 1.5px;
   color: #fef08a;
   text-shadow: 0 0 15px rgba(254, 208, 8,0.6), 0 0 30px rgba(34,197,94,0.4);
+  transition: text-shadow 0.3s ease;
 }
 
 .profileImage {
@@ -63,6 +77,12 @@
   object-fit: cover;
   border: 6px solid #22c55e;
   box-shadow: 0 0 30px rgba(34,197,94,0.6), 0 0 60px rgba(34,197,94,0.4);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.profileImage img:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 40px rgba(34,197,94,0.8), 0 0 70px rgba(34,197,94,0.5);
 }
 
 .badges {
@@ -77,10 +97,16 @@
   padding: 12px 20px;
   border-radius: 999px;
   font-weight: 700;
-  background: #334155;
+  background: linear-gradient(135deg, #334155, #1e293b);
   color: #fef08a;
-  box-shadow: 0 0 15px rgba(34,197,94,0.4);
+  box-shadow: 0 0 15px rgba(34,197,94,0.4), 0 0 25px rgba(34,197,94,0.25);
   white-space: nowrap;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.badge:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 0 20px rgba(34,197,94,0.6), 0 0 35px rgba(34,197,94,0.35);
 }
 
 .episodesDesktop {
@@ -88,6 +114,22 @@
   display: block;
   max-height: 85vh;
   overflow-y: auto;
+  padding-right: 10px;
+}
+
+/* Custom scrollbar */
+.episodesDesktop::-webkit-scrollbar {
+  width: 10px;
+}
+
+.episodesDesktop::-webkit-scrollbar-thumb {
+  background: rgba(34,197,94,0.4);
+  border-radius: 10px;
+}
+
+.episodesDesktop::-webkit-scrollbar-track {
+  background: rgba(15,23,42,0.5);
+  border-radius: 10px;
 }
 
 .episodesMobile {
@@ -99,6 +141,7 @@
   margin-bottom: 20px;
   text-align: center;
   color: #fef08a;
+  text-shadow: 0 0 10px rgba(34,197,94,0.4);
 }
 
 .episodes ul {
@@ -110,15 +153,22 @@
   margin-bottom: 14px;
   padding: 16px 20px;
   border-radius: 16px;
-  background: #1e293b;
+  background: linear-gradient(145deg, #1e293b, #0f172a);
   color: #f8fafc;
-  box-shadow: 0 5px 20px rgba(0,0,0,0.4);
+  box-shadow: 0 5px 20px rgba(0,0,0,0.4), 0 0 10px rgba(34,197,94,0.2);
+  transition: transform 0.2s ease, box-shadow 0.3s ease;
+}
+
+.episodes li:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(0,0,0,0.5), 0 0 15px rgba(34,197,94,0.35);
 }
 
 .episodes li strong {
   color: #22c55e;
 }
 
+/* Responsive */
 @media (max-width: 1024px) {
   .container {
     flex-direction: column;
@@ -145,6 +195,7 @@
     font-size: 36px;
   }
 }
+
 @media (max-width: 768px) {
   .profileCard {
     padding: 30px 20px;

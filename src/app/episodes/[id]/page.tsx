@@ -47,58 +47,48 @@ type EpisodeData = {
 
 export default function EpisodeDetailsPage() {
   const { id } = useParams<{ id: string }>();
-
-  // Pagination state
   const [page, setPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(12);
+  const [itemsPerPage, setItemsPerPage] = useState(12); // default 12 for professional look
 
-  // Fetch episode data
   const { data, loading, error } = useQuery<EpisodeData>(GET_EPISODE, {
     variables: { id },
   });
 
-  // Loading state
-  if (loading) return <LoadingSkeleton items={itemsPerPage} />;
-
-  // Error state
-  if (error || !data) return <ErrorMessage message="Error loading episode" />;
-
-  const allCharacters = data.episode.characters ?? [];
+  // Always calculate characters & pagination at the top (Hooks safe)
+  const allCharacters = data?.episode.characters ?? [];
   const totalPages = Math.ceil(allCharacters.length / itemsPerPage);
 
-  // Paginated characters
   const paginatedCharacters = useMemo(() => {
     const start = (page - 1) * itemsPerPage;
     const end = start + itemsPerPage;
     return allCharacters.slice(start, end);
   }, [allCharacters, page, itemsPerPage]);
 
-  // Pagination handlers
   const handlePrev = () => setPage((prev) => Math.max(prev - 1, 1));
   const handleNext = () => setPage((prev) => Math.min(prev + 1, totalPages));
-
-  // Change items per page
   const handleItemsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = parseInt(e.target.value);
     if (!isNaN(value) && value > 0) {
       setItemsPerPage(value);
-      setPage(1); // Reset to first page when changing items per page
+      setPage(1);
     }
   };
 
   return (
     <main className={styles.main}>
       <div className={styles.container}>
+        {/* BACK BUTTON */}
         <Link href="/episodes" className={styles.backButton}>
           <MdArrowBack size={18} /> Back to Episodes
         </Link>
 
+        {/* HEADER */}
         <div className={styles.header}>
-          <h1>{data.episode.episode}</h1>
-          <p>{data.episode.name}</p>
+          <h1>{data?.episode.episode ?? "Loading..."}</h1>
+          <p>{data?.episode.name ?? ""}</p>
         </div>
 
-        {/* Items per page input */}
+        {/* SHOW ITEMS PER PAGE - LEFT */}
         <div className={styles.itemsPerPage}>
           <label>
             Show{" "}
@@ -107,36 +97,41 @@ export default function EpisodeDetailsPage() {
               min={1}
               value={itemsPerPage}
               onChange={handleItemsChange}
-              style={{ width: "60px" }}
             />{" "}
             characters per page
           </label>
         </div>
 
-        {/* Character grid */}
-        <div className={styles.gridCenter}>
-          {paginatedCharacters.map((char) => (
-            <div key={char.id} className={styles.card}>
-              <Image
-                src={char.image ?? "/placeholder.png"}
-                alt={char.name ?? "Unknown"}
-                width={360}
-                height={360}
-                className={styles.image}
-              />
-              <div className={styles.cardName}>
-                <strong>{char.name ?? "Unknown"}</strong>
-                <p>
-                  {char.species ?? "Unknown"} • {char.gender ?? "Unknown"} •{" "}
-                  {char.status ?? "Unknown"}
-                </p>
-              </div>
-            </div>
-          ))}
-        </div>
+        {/* LOADING & ERROR */}
+        {loading && <LoadingSkeleton items={itemsPerPage} />}
+        {error && <ErrorMessage message="Error loading episode" />}
 
-        {/* Pagination buttons */}
-        {allCharacters.length > itemsPerPage && (
+        {/* CHARACTER GRID */}
+        {data && (
+          <div className={styles.gridCenter}>
+            {paginatedCharacters.map((char) => (
+              <div key={char.id} className={styles.card}>
+                <Image
+                  src={char.image ?? "/placeholder.png"}
+                  alt={char.name ?? "Unknown"}
+                  width={360}
+                  height={360}
+                  className={styles.image}
+                />
+                <div className={styles.cardName}>
+                  <strong>{char.name ?? "Unknown"}</strong>
+                  <p>
+                    {char.species ?? "Unknown"} • {char.gender ?? "Unknown"} •{" "}
+                    {char.status ?? "Unknown"}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* PAGINATION */}
+        {data && allCharacters.length > itemsPerPage && (
           <div className={styles.pagination}>
             <button onClick={handlePrev} disabled={page === 1}>
               Prev
