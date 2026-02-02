@@ -1,41 +1,62 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import HomeContent from "./home-content";
+import { client } from "./apolloClient";
+import { gql } from "@apollo/client";
 
-async function getInitialCharacters() {
-  const res = await fetch("https://rickandmortyapi.com/graphql", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      query: `
-        query GetCharacters($page: Int) {
-          characters(page: $page) {
-            info { pages }
-            results {
-              id
-              name
-              image
-              gender
-              status
-              species
-            }
-          }
+type Character = {
+  id: string;
+  name: string | null;
+  image: string | null;
+  gender: string | null;
+  status: string | null;
+  species: string | null;
+};
+
+type CharactersData = {
+  characters: {
+    info: { pages: number };
+    results: Character[];
+  };
+};
+
+const GET_CHARACTERS = gql`
+  query GetCharacters($page: Int) {
+    characters(page: $page) {
+      info { pages }
+      results {
+        id
+        name
+        image
+        gender
+        status
+        species
+      }
+    }
+  }
+`;
+
+export default function HomePage() {
+  const [initialCharacters, setInitialCharacters] = useState<Character[]>([]);
+  const [initialPages, setInitialPages] = useState<number>(1);
+
+  useEffect(() => {
+    client
+      .query<CharactersData>({ query: GET_CHARACTERS, variables: { page: 1 } })
+      .then((res) => {
+        if (res.data?.characters) {
+          setInitialCharacters(res.data.characters.results);
+          setInitialPages(res.data.characters.info.pages);
         }
-      `,
-      variables: { page: 1 },
-    }),
-    cache: "no-store", // SSR
-  });
-
-  const json = await res.json();
-  return json.data.characters;
-}
-
-export default async function HomePage() {
-  const characters = await getInitialCharacters();
+      })
+      .catch((err) => console.error(err));
+  }, []);
 
   return (
     <HomeContent
-      initialCharacters={characters.results}
-      initialPages={characters.info.pages}
+      initialCharacters={initialCharacters}
+      initialPages={initialPages}
     />
   );
 }

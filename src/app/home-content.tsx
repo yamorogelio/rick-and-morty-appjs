@@ -2,6 +2,7 @@
 
 import { gql } from "@apollo/client";
 import { useQuery } from "@apollo/client/react";
+import { client } from "./apolloClient";
 import Link from "next/link";
 import Image from "next/image";
 import { MdMovie, MdSearch } from "react-icons/md";
@@ -67,59 +68,52 @@ export default function HomeContent({
   const [species, setSpecies] = useState("All");
   const [page, setPage] = useState(1);
 
-  // 🔥 SSR hydration
   const [allCharacters, setAllCharacters] = useState<Character[]>(
     initialCharacters
   );
 
-  const { data, loading, error } = useQuery<
-    CharactersData,
-    CharactersVars
-  >(GET_CHARACTERS, {
-    variables: { page, name: search },
-    notifyOnNetworkStatusChange: true,
-  });
+  const { data, loading, error } = useQuery<CharactersData, CharactersVars>(
+    GET_CHARACTERS,
+    {
+      client, // specify Apollo Client
+      variables: { page, name: search },
+      notifyOnNetworkStatusChange: true,
+    }
+  );
 
-  // Sync Apollo data (keeps your logic intact)
   useEffect(() => {
     if (!data?.characters?.results) return;
 
     if (page === 1) {
       setAllCharacters(data.characters.results);
     } else {
-      setAllCharacters((prev) => {
-        const newChars = data.characters.results.filter(
+      setAllCharacters((prev) => [
+        ...prev,
+        ...data.characters.results.filter(
           (c) => !prev.some((p) => p.id === c.id)
-        );
-        return [...prev, ...newChars];
-      });
+        ),
+      ]);
     }
   }, [data, page]);
 
-  useEffect(() => {
-    setPage(1);
-  }, [search]);
+  useEffect(() => setPage(1), [search]);
 
   const filteredCharacters = useMemo(() => {
     return allCharacters.filter((char) =>
       (char.name ?? "").toLowerCase().includes(search.toLowerCase()) &&
-      (gender === "All" || (char.gender ?? "") === gender) &&
-      (status === "All" || (char.status ?? "") === status) &&
-      (species === "All" || (char.species ?? "") === species)
+      (gender === "All" || char.gender === gender) &&
+      (status === "All" || char.status === status) &&
+      (species === "All" || char.species === species)
     );
   }, [allCharacters, search, gender, status, species]);
 
   const totalPages = data?.characters?.info.pages ?? initialPages;
 
   const handleLoadMore = () => {
-    if (page < totalPages) {
-      setPage((prev) => prev + 1);
-    }
+    if (page < totalPages) setPage((prev) => prev + 1);
   };
 
-  if (error) {
-    return <p className={styles.errorText}>Error loading characters</p>;
-  }
+  if (error) return <p className={styles.errorText}>Error loading characters</p>;
 
   return (
     <main className={styles.main}>
@@ -143,7 +137,8 @@ export default function HomeContent({
             </div>
 
             <div className={styles.filtersGrid}>
-              {[{ value: gender, set: setGender, options: ["All","Male","Female","unknown"] },
+              {[
+                { value: gender, set: setGender, options: ["All","Male","Female","unknown"] },
                 { value: status, set: setStatus, options: ["All","Alive","Dead","unknown"] },
                 { value: species, set: setSpecies, options: ["All","Human","Alien"] }
               ].map((filter, index) => (

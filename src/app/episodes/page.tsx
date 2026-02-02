@@ -12,7 +12,7 @@ const GET_EPISODES = gql`
   query GetEpisodes($page: Int!) {
     episodes(page: $page) {
       info { pages next prev }
-      resultzs { id name episode }
+      results { id name episode }
     }
   }
 `;
