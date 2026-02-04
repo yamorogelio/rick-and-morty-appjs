@@ -41,6 +41,7 @@ export default function HomePage() {
   const [initialCharacters, setInitialCharacters] = useState<Character[]>([]);
   const [initialPages, setInitialPages] = useState<number>(1);
 
+  // Fetch first page of characters on mount
   useEffect(() => {
     client
       .query<CharactersData>({ query: GET_CHARACTERS, variables: { page: 1 } })

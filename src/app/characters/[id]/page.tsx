@@ -4,7 +4,7 @@ import { gql } from "@apollo/client";
 import { useQuery } from "@apollo/client/react";
 import { useParams, useRouter } from "next/navigation";
 import Image from "next/image";
-import { client } from "../apolloClient"; // adjust path if needed
+import { client } from "../../../lib/apolloClient";
 import styles from "../../style/character-page.module.css";
 import LoadingSkeleton from "../../LoadingSkeleton";
 
@@ -47,21 +47,20 @@ type CharacterData = {
 };
 
 export default function CharacterPage() {
-  const { id } = useParams<{ id: string }>();
+  const params = useParams();
   const router = useRouter();
+  const id = params?.id as string;
 
-  // Use Apollo client explicitly
-  const { data, loading, error } = useQuery<CharacterData>(
-    GET_CHARACTER,
-    {
-      client,
-      variables: { id },
-    }
-  );
+  const { data, loading, error } = useQuery<CharacterData>(GET_CHARACTER, {
+    client,
+    variables: { id },
+  });
 
-  if (loading) return <LoadingSkeleton items={1} />;
+  if (loading) {
+    return <LoadingSkeleton items={1} />;
+  }
 
-  if (error || !data) {
+  if (error || !data?.character) {
     return (
       <p style={{ textAlign: "center", color: "#ff6b6b" }}>
         Error loading character
@@ -82,36 +81,36 @@ export default function CharacterPage() {
             ← Back
           </button>
 
-          <h1 className={styles.name}>
-            {char.name ?? "Unknown Name"}
-          </h1>
+          <h1 className={styles.name}>{char.name ?? "Unknown Name"}</h1>
 
-          <div className={styles.profileImage}>
-            <Image
-              src={char.image ?? "/placeholder.png"}
-              alt={char.name ?? "Unknown"}
-              width={260}
-              height={260}
-              priority
-            />
-          </div>
+        <div className={styles.profileImage}>
+  <Image
+    src={char.image || "/placeholder.png"}
+    alt={char.name || "Unknown"}
+    width={260}
+    height={260}
+    priority={true}
+  />
+</div>
+
 
           <div className={styles.badges}>
-            {[
-              { label: "Status", value: char.status ?? "Unknown" },
-              { label: "Species", value: char.species ?? "Unknown" },
-              { label: "Gender", value: char.gender ?? "Unknown" },
-            ].map(({ label, value }) => (
-              <div key={label} className={styles.badge}>
-                <strong>{label}:</strong> {value}
-              </div>
-            ))}
+            <div className={styles.badge}>
+              <strong>Status:</strong> {char.status ?? "Unknown"}
+            </div>
+            <div className={styles.badge}>
+              <strong>Species:</strong> {char.species ?? "Unknown"}
+            </div>
+            <div className={styles.badge}>
+              <strong>Gender:</strong> {char.gender ?? "Unknown"}
+            </div>
           </div>
 
+          {/* Mobile Episodes */}
           <div className={styles.episodesMobile}>
             <h3>Episodes Appeared In</h3>
             <ul>
-              {char.episode.map((ep) => (
+              {char.episode.map((ep: Episode) => (
                 <li key={ep.id}>
                   <strong>{ep.episode ?? "Unknown Episode"}</strong> —{" "}
                   {ep.name ?? "Unknown Name"}
@@ -121,11 +120,12 @@ export default function CharacterPage() {
           </div>
         </div>
 
+        {/* Desktop Episodes */}
         <div className={styles.episodesDesktop}>
           <div className={styles.episodes}>
             <h3>Episodes Appeared In</h3>
             <ul>
-              {char.episode.map((ep) => (
+              {char.episode.map((ep: Episode) => (
                 <li key={ep.id}>
                   <strong>{ep.episode ?? "Unknown Episode"}</strong> —{" "}
                   {ep.name ?? "Unknown Name"}

@@ -2,9 +2,9 @@
 
 import { gql } from "@apollo/client";
 import { useQuery } from "@apollo/client/react";
-import { client } from "./apolloClient";
+import { client } from "../lib/apolloClient";
 import Link from "next/link";
-import Image from "next/image";
+import Image from "next/image"; // ✅ correct
 import { MdMovie, MdSearch } from "react-icons/md";
 import { useState, useMemo, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
@@ -68,14 +68,12 @@ export default function HomeContent({
   const [species, setSpecies] = useState("All");
   const [page, setPage] = useState(1);
 
-  const [allCharacters, setAllCharacters] = useState<Character[]>(
-    initialCharacters
-  );
+  const [allCharacters, setAllCharacters] = useState<Character[]>(initialCharacters);
 
   const { data, loading, error } = useQuery<CharactersData, CharactersVars>(
     GET_CHARACTERS,
     {
-      client, // specify Apollo Client
+      client,
       variables: { page, name: search },
       notifyOnNetworkStatusChange: true,
     }
@@ -83,27 +81,23 @@ export default function HomeContent({
 
   useEffect(() => {
     if (!data?.characters?.results) return;
-
-    if (page === 1) {
-      setAllCharacters(data.characters.results);
-    } else {
+    if (page === 1) setAllCharacters(data.characters.results);
+    else
       setAllCharacters((prev) => [
         ...prev,
-        ...data.characters.results.filter(
-          (c) => !prev.some((p) => p.id === c.id)
-        ),
+        ...data.characters.results.filter((c) => !prev.some((p) => p.id === c.id)),
       ]);
-    }
   }, [data, page]);
 
   useEffect(() => setPage(1), [search]);
 
   const filteredCharacters = useMemo(() => {
-    return allCharacters.filter((char) =>
-      (char.name ?? "").toLowerCase().includes(search.toLowerCase()) &&
-      (gender === "All" || char.gender === gender) &&
-      (status === "All" || char.status === status) &&
-      (species === "All" || char.species === species)
+    return allCharacters.filter(
+      (char) =>
+        (char.name ?? "").toLowerCase().includes(search.toLowerCase()) &&
+        (gender === "All" || char.gender === gender) &&
+        (status === "All" || char.status === status) &&
+        (species === "All" || char.species === species)
     );
   }, [allCharacters, search, gender, status, species]);
 
@@ -119,9 +113,7 @@ export default function HomeContent({
     <main className={styles.main}>
       <div className={styles.container}>
         <h1 className={styles.title}>Rick & Morty Multiverse</h1>
-        <p className={styles.subtitle}>
-          Dive into infinite realities and iconic characters
-        </p>
+        <p className={styles.subtitle}>Dive into infinite realities and iconic characters</p>
 
         {/* SEARCH + FILTERS */}
         <div className={styles.searchFilters}>
@@ -138,15 +130,11 @@ export default function HomeContent({
 
             <div className={styles.filtersGrid}>
               {[
-                { value: gender, set: setGender, options: ["All","Male","Female","unknown"] },
-                { value: status, set: setStatus, options: ["All","Alive","Dead","unknown"] },
-                { value: species, set: setSpecies, options: ["All","Human","Alien"] }
+                { value: gender, set: setGender, options: ["All", "Male", "Female", "unknown"] },
+                { value: status, set: setStatus, options: ["All", "Alive", "Dead", "unknown"] },
+                { value: species, set: setSpecies, options: ["All", "Human", "Alien"] },
               ].map((filter, index) => (
-                <select
-                  key={index}
-                  value={filter.value}
-                  onChange={(e) => filter.set(e.target.value)}
-                >
+                <select key={index} value={filter.value} onChange={(e) => filter.set(e.target.value)}>
                   {filter.options.map((opt) => (
                     <option key={opt}>{opt}</option>
                   ))}
@@ -177,10 +165,7 @@ export default function HomeContent({
               >
                 {filteredCharacters.map((char, index) => (
                   <SwiperSlide key={`slide-${char.id}-${index}`}>
-                    <Link
-                      href={`/characters/${char.id}`}
-                      className={styles.characterLink}
-                    >
+                    <Link href={`/characters/${char.id}`} className={styles.characterLink}>
                       <div className={styles.characterCard}>
                         <div className={styles.imageWrapper}>
                           <Image
@@ -191,9 +176,7 @@ export default function HomeContent({
                         </div>
                         <div className={styles.characterInfo}>
                           <strong>{char.name}</strong>
-                          <p>
-                            {char.species} • {char.gender} • {char.status}
-                          </p>
+                          <p>{char.species} • {char.gender} • {char.status}</p>
                         </div>
                       </div>
                     </Link>
@@ -205,11 +188,7 @@ export default function HomeContent({
             {/* GRID */}
             <div className={styles.cardsGridStatic}>
               {filteredCharacters.map((char, index) => (
-                <Link
-                  key={`card-${char.id}-${index}`}
-                  href={`/characters/${char.id}`}
-                  className={styles.characterLink}
-                >
+                <Link key={`card-${char.id}-${index}`} href={`/characters/${char.id}`} className={styles.characterLink}>
                   <div className={styles.characterCard}>
                     <div className={styles.imageWrapper}>
                       <Image
@@ -220,9 +199,7 @@ export default function HomeContent({
                     </div>
                     <div className={styles.characterInfo}>
                       <strong>{char.name}</strong>
-                      <p>
-                        {char.species} • {char.gender} • {char.status}
-                      </p>
+                      <p>{char.species} • {char.gender} • {char.status}</p>
                     </div>
                   </div>
                 </Link>
@@ -232,10 +209,7 @@ export default function HomeContent({
             {/* LOAD MORE */}
             {page < totalPages && (
               <div className={styles.loadMoreWrapper}>
-                <button
-                  onClick={handleLoadMore}
-                  className={styles.loadMoreButton}
-                >
+                <button onClick={handleLoadMore} className={styles.loadMoreButton}>
                   Load More
                 </button>
               </div>
